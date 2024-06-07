@@ -1,0 +1,66 @@
+exclude: 'docs|node_modules|migrations|data|.tox|.idea|venv|.serverless'
+fail_fast: true
+default_stages: [ commit ]
+default_install_hook_types: [ pre-commit, pre-push, commit-msg ]
+
+repos:
+  # remote -----------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      # Security
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      # Detector
+      - id: check-json
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      # Formatter
+      - id: trailing-whitespace
+        stages: [ pre-commit ]
+      - id: end-of-file-fixer
+        stages: [ pre-commit ]
+
+  # Python code formatter
+  - repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+      - id: black
+        language_version: python3.12
+
+  # sort imports alphabetically, and automatically separated into sections and by type
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        language_version: python3.12
+
+  # compliance to PEP8
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        language_version: python3.12
+
+#  - repo: https://github.com/pre-commit/mirrors-mypy
+#    rev: 'v1.10.0'
+#    hooks:
+#      - id: mypy
+
+  # security
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: [ "-x", "tests,local" ]
+
+#  # local --------------------------------------------------
+#  - repo: local
+#    hooks:
+#      # run pytest
+#      - id: pytest
+#        name: pytest
+#        entry: pytest tests
+#        language: system
+#        types: [ python ]
+#        stages: [ pre-push ]

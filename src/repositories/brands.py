@@ -1,0 +1,11 @@
+from src.models import BrandModel
+
+from .base import DynamoRepository
+
+
+class BrandRepository(DynamoRepository):
+    model_class = BrandModel
+
+    def exist(self, name: str):
+        count = self.count(hash_key="BRAND", range_key_condition=BrandModel.gsi1sk == name, index=BrandModel.gsi1)
+        return count > 0

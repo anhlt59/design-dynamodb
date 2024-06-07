@@ -1,0 +1,31 @@
+services:
+  localstack:
+    image: localstack/localstack:3.4.0
+    platform: linux/amd64
+    container_name: example-localstack
+    ports:
+      - "4566:4566"
+    volumes:
+      - "./local/data/localstack:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./local/localstack:/etc/localstack/init/ready.d/"
+    environment:
+      - SERVICES=dynamodb
+      - DEBUG=1
+      - DEFAULT_REGION=us-east-1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOSTNAME_EXTERNAL=localstack
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: local-stage
+    image: example-app
+    platform: linux/amd64
+    container_name: example-app
+    volumes:
+      - ./src:/app/src
+      - ./app.py:/app/app.py
+    ports:
+      - "5000:5000"

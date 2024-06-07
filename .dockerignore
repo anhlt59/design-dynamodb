@@ -1,0 +1,15 @@
+# files
+.editorconfig
+.gitattributes
+.gitignore
+.setup.cfg
+README.md
+
+# folders
+__pycache__
+.github
+.idea
+venv
+data
+local
+scripts
