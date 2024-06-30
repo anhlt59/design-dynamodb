@@ -15,4 +15,4 @@ start:
 test:
 	@$(PYTHON) -m pytest tests
 
-.PHONY: setup activate start test
+.PHONY: setup install start test

@@ -1,4 +1,5 @@
-## DynamoDB table design
+## DynamoDB single-table design
+![Coverage Status](docs/images/coverage.svg)
 
 * Steps for Modeling with DynamoDB
     * Create an entity-relationship diagram ("ERD")
@@ -131,8 +132,8 @@
 | &check; | Product  | List products by brand + categogy     | GSI1        | GSI1PK="BRAND#123" AND GSI1SK.startswith("CAT#456")         | order by category's created_at |
 | &check; | Product  | List products by category             | GSI2        | GSI2PK="CAT#123"                                            | order by created_at            |
 | &check; | Product  | List products by categogy + brand     | GSI2        | GSI2PK="CAT#123" AND GSI2SK.startswith("BRAND#456")         | order by brand's created_at    |
-| &check; | Order    | Get user's order by id                | Table       | PK="USER#001" AND SK="ORDER#333"                            | order by created_at            |
-| &check; | Order    | List user's orders                    | Table       | PK="USER#001" AND SK.startswith("ORDER")                    |                                |
+| &check; | Order    | Get user's order by id                | Table       | PK="USER#001" AND SK="ORDER#333"                            |                                |
+| &check; | Order    | List user's orders                    | Table       | PK="USER#001" AND SK.startswith("ORDER")                    | order by created_at            |
 | &check; | Order    | List orders by status                 | GSI1        | GSI2PK="ORDER#STATUS#DELIVERED" AND GSI2SK>="AT#1719473962" | order by updated_at            |
 
 | Entity   | GSI1PK                      | GSI1PK                       |

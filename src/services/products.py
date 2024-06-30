@@ -59,19 +59,6 @@ class ProductService:
             attributes["gsi1sk"] = f"{category_id}#AT#{created_at}"
         self.product_repository.update(hash_key="PROD", range_key=product_id, attributes=attributes)
 
-    def increase_stock(self, product_id: str, n: int):
-        self.product_repository.update(
-            hash_key="PROD", range_key=product_id, actions=[ProductModel.stock.set(ProductModel.stock + n)]
-        )
-
-    def decrease_stock(self, product_id: str, n: int):
-        self.product_repository.update(
-            hash_key="PROD",
-            range_key=product_id,
-            actions=[ProductModel.stock.set(ProductModel.stock - n)],
-            condition=ProductModel.stock >= n,
-        )
-
     def delete(self, product_id: str):
         try:
             self.product_repository.delete(hash_key="PROD", range_key=product_id)

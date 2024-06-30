@@ -29,3 +29,6 @@ services:
       - ./app.py:/app/app.py
     ports:
       - "5000:5000"
+    environment:
+      - APP_HOST=0.0.0.0
+      - APP_PORT=5000

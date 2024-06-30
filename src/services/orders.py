@@ -52,7 +52,7 @@ class OrderService:
 
     def delete(self, user_id: str, order_id: str):
         try:
-            self.product_repository.delete(hash_key=user_id, range_key=order_id)
+            self.order_repository.delete(hash_key=user_id, range_key=order_id)
         except ConflictError:
             raise NotFoundError(f"Order<{order_id}> not found")
 

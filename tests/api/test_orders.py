@@ -27,6 +27,10 @@ def test_create_order(test_client, dummy_user, dummy_product):
     rv = test_client.post(f"/api/v1/users/{dummy_user.id}/orders", json=data, headers=HEADERS)
     assert rv.status_code == 201
     order_service.delete(dummy_user.id, rv.json["id"])
+    # out of stock
+    data["items"][0]["quantity"] = 100
+    rv = test_client.post(f"/api/v1/users/{dummy_user.id}/orders", json=data, headers=HEADERS)
+    assert rv.status_code == 422
 
 
 def test_cancel_order(test_client, dummy_order):

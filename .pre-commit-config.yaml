@@ -42,25 +42,9 @@ repos:
       - id: flake8
         language_version: python3.12
 
-#  - repo: https://github.com/pre-commit/mirrors-mypy
-#    rev: 'v1.10.0'
-#    hooks:
-#      - id: mypy
-
   # security
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.5
     hooks:
       - id: bandit
         args: [ "-x", "tests,local" ]
-
-#  # local --------------------------------------------------
-#  - repo: local
-#    hooks:
-#      # run pytest
-#      - id: pytest
-#        name: pytest
-#        entry: pytest tests
-#        language: system
-#        types: [ python ]
-#        stages: [ pre-push ]

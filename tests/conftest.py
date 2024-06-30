@@ -23,7 +23,7 @@ def dummy_user():
         {
             "email": fake.email(),
             "name": fake.name(),
-            "password": fake.password(length=16),
+            "password": "12345678",
         }
     )
     yield model

@@ -56,6 +56,10 @@ def test_create_product(test_client, dummy_brand, dummy_category):
     rv = test_client.post("/api/v1/products", json=data, headers=HEADERS)
     assert rv.status_code == 201
     product_service.delete(rv.json["id"])
+    # invalid brand_id
+    data["brandId"] = "INVALID_ID"
+    rv = test_client.post("/api/v1/products", json=data, headers=HEADERS)
+    assert rv.status_code == 404
 
 
 def test_update_product(test_client, dummy_product):

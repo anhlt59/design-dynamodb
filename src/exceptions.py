@@ -37,9 +37,5 @@ class InternalServerError(ApiError, exceptions.InternalServerError):
     code = 500
 
 
-# class NotImplementedError(ApiError, exceptions.NotImplemented):
-#     code = 501
-
-
 class ServiceUnavailableError(ApiError, exceptions.ServiceUnavailable):
     code = 503

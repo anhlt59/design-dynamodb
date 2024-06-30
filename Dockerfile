@@ -31,15 +31,6 @@ WORKDIR $APP_HOME
 COPY ./app.py "${APP_HOME}"
 COPY ./src "${APP_HOME}/src"
 
-# 'production' stage -------------------------------------------------------------------------------
-FROM run-stage as production-stage
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
-
-# 'staging' stage -------------------------------------------------------------------------------
-FROM run-stage as staging-stage
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
-
 # 'local' stage -------------------------------------------------------------------------------
 FROM run-stage as local-stage
-ENV APP_HOST=0.0.0.0
 CMD ["python", "app.py"]

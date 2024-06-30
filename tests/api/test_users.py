@@ -1,6 +1,7 @@
-import time
+import pytest
 
 from src.config import APP_API_KEY
+from src.exceptions import AuthenticationError
 from src.models import UserModel
 from src.repositories import UserRepository
 from src.services import UserService
@@ -59,13 +60,18 @@ def test_filter_users(test_client):
     user_repository.batch_delete(models)
 
 
-def test_register_user(test_client):
-    rv = test_client.post(
-        "/api/v1/users", json={"email": "test01@gmail.com", "name": "test01", "password": "12345678"}, headers=HEADERS
-    )
+def test_register_login_user(test_client):
+    data = {"email": "test01@gmail.com", "name": "test01", "password": "12345678"}
+    rv = test_client.post("/api/v1/users", json=data, headers=HEADERS)
     assert rv.status_code == 201
-    # clean
-    user_service.delete(rv.json["id"])
+    user_id = rv.json["id"]
+    # duplicate email
+    rv = test_client.post("/api/v1/users", json=data, headers=HEADERS)
+    assert rv.status_code == 409
+
+    user = user_service.login("test01@gmail.com", "12345678")
+    assert user.id == user_id
+    user_service.delete(user_id)
 
 
 def test_update_user(test_client, dummy_user):
