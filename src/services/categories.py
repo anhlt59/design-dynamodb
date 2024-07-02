@@ -20,8 +20,8 @@ class CategoryService:
         cursor: dict | None = None,
     ) -> ResultIterator[CategoryModel]:
         if filters and filters.get("name"):
-            index = CategoryModel.gsi1
-            range_key_condition = CategoryModel.gsi1sk.startswith(filters["name"])
+            index = CategoryModel.lsi
+            range_key_condition = CategoryModel.sku.startswith(filters["name"])
         else:
             index = range_key_condition = None
         return self.category_repository.query(

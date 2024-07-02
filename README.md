@@ -1,4 +1,5 @@
 ## DynamoDB single-table design
+
 ![Coverage Status](docs/images/coverage.svg)
 
 * Steps for Modeling with DynamoDB
@@ -116,16 +117,16 @@
 |         | Entity   | Access Pattern                        | Table/Index | Key Condition                                               | Notes                          |
 |:--------|:---------|:--------------------------------------|:------------|-------------------------------------------------------------|:-------------------------------|
 | &check; | User     | Get a user by id                      | Table       | PK="USER" AND SK="USER#001"                                 |                                |
-| &check; | User     | Get a user by email                   | GSI1        | GSI1PK="USER" AND GSI1SK="EMAIL#test01@gmail.com"           |                                |
+| &check; | User     | Get a user by email                   | LSI         | PK="USER" AND SKU="EMAIL#test01@gmail.com"                  |                                |
 | &check; | User     | List users                            | Table       | PK="USER"                                                   | order by created_at            |
 | &check; | User     | List users filter by created_at       | Table       | PK="USER" AND SK > "USER#<ksuid_prefix_time>"               | order by created_at            |
 | &check; | User     | List users filter by email-prefix     | GSI1        | GSI1PK="USER" AND GSI1SK.startswith("EMAIL#test")           | order by email                 |
 | &check; | Category | Get a category by id                  | Table       | PK="CAT" AND SK="CAT#123"                                   |                                |
 | &check; | Category | List categories                       | Table       | PK="CAT"                                                    | order by created_at            |
-| &check; | Category | List categories filter by name-prefix | GSI1        | GSI1PK="CAT" AND GSI1SK.startswith("CAT#NAME#CatX")         | order by name                  |
+| &check; | Category | List categories filter by name-prefix | LSI         | PK="CAT" AND SKU.startswith("CAT#NAME#CatX")                | order by name                  |
 | &check; | Brand    | Get a brand by id                     | Table       | PK="BRAND" AND SK="BRAND#456"                               |                                |
 | &check; | Brand    | List brands                           | Table       | PK="BRAND"                                                  | order by created_at            |
-| &check; | Brand    | List brands filter by name-prefix     | GSI1        | GSI1PK="BRAND" AND GSI1SK.startswith("BRAND#NAME#BrY")      | order by name                  |
+| &check; | Brand    | List brands filter by name-prefix     | LSI         | PK="BRAND" AND SKU.startswith("BRAND#NAME#BrY")             | order by name                  |
 | &check; | Product  | Get a product by id                   | Table       | PK="PROD" AND SK="PRO#222"                                  |                                |
 | &check; | Product  | List products                         | Table       | PK="PROD"                                                   | order by created_at            |
 | &check; | Product  | List products by brand                | GSI1        | GSI1PK="BRAND#123"                                          | order by created_at            |
@@ -136,13 +137,20 @@
 | &check; | Order    | List user's orders                    | Table       | PK="USER#001" AND SK.startswith("ORDER")                    | order by created_at            |
 | &check; | Order    | List orders by status                 | GSI1        | GSI2PK="ORDER#STATUS#DELIVERED" AND GSI2SK>="AT#1719473962" | order by updated_at            |
 
-| Entity   | GSI1PK                      | GSI1PK                       |
-|----------|-----------------------------|------------------------------|
-| User     | USER                        | EMAIL#<email>                |
-| Brand    | BRAND                       | BRAND#NAME#<name>            |
-| Category | CAT                         | CAT#NAME#<name>              |
-| Order    | ORDER#STATUS#<order_status> | AT#<updated_at>              |
-| Product  | BRAND#<brand_id>            | CAT#<cat_id>#AT#<created_at> |
+#### Local secondary index
+
+| Entity   | PK    | SKU               |
+|----------|-------|-------------------|
+| User     | USER  | EMAIL#<email>     |
+| Brand    | BRAND | BRAND#NAME#<name> |
+| Category | CAT   | CAT#NAME#<name>   |
+
+#### Global secondary indexes
+
+| Entity  | GSI1PK                      | GSI1PK                       |
+|---------|-----------------------------|------------------------------|
+| Order   | ORDER#STATUS#<order_status> | AT#<updated_at>              |
+| Product | BRAND#<brand_id>            | CAT#<cat_id>#AT#<created_at> |
 
 | Entity  | GSI2PK       | GSI2PK                           |
 |---------|--------------|----------------------------------|

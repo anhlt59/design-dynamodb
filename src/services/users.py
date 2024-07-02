@@ -17,8 +17,8 @@ class UserService:
     def get_by_email(self, email: str) -> UserModel:
         result = self.user_repository.query(
             hash_key="USER",
-            range_key_condition=UserModel.gsi1sk == email,
-            index=UserModel.gsi1,
+            range_key_condition=UserModel.sku == email,
+            index=UserModel.lsi,
         )
         if user := next(result, None):
             return user
@@ -46,7 +46,7 @@ class UserService:
         if password := attributes.get("password"):
             attributes["password"] = generate_password_hash(password)
         if email := attributes.get("email"):
-            attributes["gsi1sk"] = email
+            attributes["sku"] = email
         try:
             self.user_repository.update(hash_key="USER", range_key=user_id, attributes=attributes)
         except ConflictError:
@@ -95,7 +95,7 @@ class UserService:
         cursor: dict | None = None,
         limit: int = 50,
     ) -> ResultIterator[UserModel]:
-        range_key_condition = UserModel.gsi1sk.startswith(email)
+        range_key_condition = UserModel.sku.startswith(email)
         # set filter_condition
         filter_condition = None
         if name := filters.get("name"):
@@ -112,7 +112,7 @@ class UserService:
             hash_key="USER",
             range_key_condition=range_key_condition,
             filter_condition=filter_condition,
-            index=UserModel.gsi1,
+            index=UserModel.lsi,
             scan_index_forward="asc" == derection,
             last_evaluated_key=cursor,
             limit=limit,

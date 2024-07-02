@@ -22,8 +22,8 @@ class BrandService:
     ) -> ResultIterator[BrandModel]:
         index = range_key_condition = None
         if filters and filters.get("name"):
-            index = BrandModel.gsi1
-            range_key_condition = BrandModel.gsi1sk.startswith(filters["name"])
+            index = BrandModel.lsi
+            range_key_condition = BrandModel.sku.startswith(filters["name"])
         return self.brand_repository.query(
             hash_key="BRAND",
             range_key_condition=range_key_condition,

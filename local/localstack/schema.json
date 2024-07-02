@@ -20,6 +20,10 @@
       "AttributeType": "S"
     },
     {
+      "AttributeName": "sku",
+      "AttributeType": "S"
+    },
+    {
       "AttributeName": "gsi1pk",
       "AttributeType": "S"
     },
@@ -63,6 +67,24 @@
         },
         {
           "AttributeName": "gsi2sk",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    }
+  ],
+  "LocalSecondaryIndexes": [
+    {
+      "IndexName": "lsi",
+      "KeySchema": [
+        {
+          "AttributeName": "pk",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "sku",
           "KeyType": "RANGE"
         }
       ],
