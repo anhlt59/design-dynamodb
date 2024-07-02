@@ -22,7 +22,7 @@ class OrderService:
                 # decrease stock of product
                 total_price = 0
                 for item in items:
-                    total_price += item["price"]
+                    total_price += item["price"] * item["quantity"]
                     transaction.update(
                         ProductModel(id=item["productId"]),
                         actions=[ProductModel.stock.set(ProductModel.stock - item["quantity"])],

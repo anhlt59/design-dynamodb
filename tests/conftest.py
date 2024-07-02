@@ -1,11 +1,9 @@
-import json
 import logging
 
 import pytest
 from faker import Faker
 
 from src.bootstrap import create_app
-from src.models import BrandModel, CategoryModel, DynamoModel, UserModel
 from src.repositories import BrandRepository, CategoryRepository, OrderRepository, ProductRepository, UserRepository
 
 logging.getLogger("faker").setLevel(logging.WARNING)
