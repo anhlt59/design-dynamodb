@@ -17,7 +17,7 @@ class UserModel(DynamoModel, discriminator="USER"):
     # Keys
     pk = KeyAttribute(hash_key=True, default="USER")
     sk = KeyAttribute(range_key=True, prefix="USER#")
-    # GSI
+    # Index
     sku = KeyAttribute(prefix="EMAIL#")
     lsi = LSIIndex()
     # Attributes

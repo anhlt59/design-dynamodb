@@ -17,7 +17,7 @@ class CategoryModel(DynamoModel, discriminator="CATEGORY"):
     # Keys
     pk = KeyAttribute(hash_key=True, default="CAT")
     sk = KeyAttribute(range_key=True, prefix="CAT#")
-    # GSI
+    # Index
     sku = KeyAttribute(prefix="CAT#NAME#")
     lsi = LSIIndex()
     # Attributes

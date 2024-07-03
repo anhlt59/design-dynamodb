@@ -17,7 +17,7 @@ class BrandModel(DynamoModel, discriminator="BRAND"):
     # Keys
     pk = KeyAttribute(hash_key=True, default="BRAND")
     sk = KeyAttribute(range_key=True, prefix="BRAND#")
-    # LSI
+    # Index
     sku = KeyAttribute(prefix="BRAND#NAME#")
     lsi = LSIIndex()
     # Attributes

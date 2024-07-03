@@ -38,7 +38,7 @@ class OrderModel(DynamoModel, discriminator="ORDER"):
     # Keys
     pk = KeyAttribute(hash_key=True, prefix="USER#")
     sk = KeyAttribute(range_key=True, prefix="ORDER#")
-    # GSI
+    # Index
     gsi1pk = KeyAttribute(prefix="ORDER#STATUS#", null=False)
     gsi1sk = KeyAttribute(prefix="AT#")
     gsi1 = GSI1Index()

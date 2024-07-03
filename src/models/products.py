@@ -26,7 +26,7 @@ class ProductModel(DynamoModel, discriminator="PRODUCT"):
     # Keys
     pk = KeyAttribute(default="PROD", hash_key=True)
     sk = KeyAttribute(prefix="PROD#", range_key=True)
-    # GSI
+    # Index
     gsi1pk = KeyAttribute(prefix="BRAND#")
     gsi1sk = KeyAttribute(prefix="CAT#")
     gsi1 = GSI1Index()
