@@ -10,11 +10,12 @@ RUN apt-get update \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
+
 # Install python packages
-RUN pip install poetry==1.8.3 wheel==0.43.0
 COPY ./pyproject.toml ./poetry.lock /
-RUN poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt
-RUN pip wheel --wheel-dir /usr/src/app/wheels -r /requirements.txt
+COPY ./app /app
+RUN pip install poetry==1.8.3
+RUN poetry build --format=wheel
 
 # 'run' stage --------------------------------------------------------------------------------
 FROM python as run-stage
@@ -23,13 +24,10 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONWARNINGS=ignore
 # Copy python dependency wheels from build-stage
-COPY --from=build-stage /usr/src/app/wheels /wheels/
+COPY --from=build-stage /dist/ /wheels/
 # Use wheels to install python dependencies
-RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* && rm -rf /wheels
-# Copy source code to WORKDIR
-WORKDIR $APP_HOME
-COPY app "${APP_HOME}"
+RUN pip install --no-cache-dir --find-links=/wheels/ /wheels/* && rm -rf /wheels
 
 # 'local' stage -------------------------------------------------------------------------------
 FROM run-stage as local-stage
-CMD ["python", "app"]
+CMD ["python", "-m", "app"]
