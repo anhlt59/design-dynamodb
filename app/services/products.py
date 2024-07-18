@@ -1,9 +1,9 @@
 from pynamodb.exceptions import TransactWriteError
 
-from src.exceptions import ConflictError, NotFoundError
-from src.models import BrandModel, CategoryModel, ProductModel
-from src.repositories import ProductRepository
-from src.utils.datetime_utils import ksuid_to_timestamp, timestamp_to_hex
+from app.core.exceptions import ConflictError, NotFoundError
+from app.models import BrandModel, CategoryModel, ProductModel
+from app.repositories import ProductRepository
+from app.utils.datetime_utils import ksuid_to_timestamp, timestamp_to_hex
 
 
 class ProductService:

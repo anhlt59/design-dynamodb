@@ -6,8 +6,8 @@ from pynamodb.attributes import DiscriminatorAttribute, NumberAttribute, Unicode
 from pynamodb.indexes import Projection
 from pynamodb.models import Model
 
-from src.config import AWS_ENDPOINT, AWS_REGION, DYNAMODB_TABLE_NAME
-from src.utils.datetime_utils import current_utc_timestamp
+from app.core.config import AWS_ENDPOINT, AWS_REGION, DYNAMODB_TABLE_NAME
+from app.utils.datetime_utils import current_utc_timestamp
 
 
 # Attributes -----------------------------------------------------------

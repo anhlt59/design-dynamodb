@@ -1,11 +1,11 @@
 from pynamodb.exceptions import TransactWriteError
 from pynamodb.models import ResultIterator
 
-from src.exceptions import ConflictError, NotFoundError, UnprocessableEntityError
-from src.models import OrderModel, ProductModel
-from src.models.orders import OrderStatus
-from src.repositories import OrderRepository, ProductRepository
-from src.utils.datetime_utils import timestamp_to_hex
+from app.core.exceptions import ConflictError, NotFoundError, UnprocessableEntityError
+from app.models import OrderModel, ProductModel
+from app.models.orders import OrderStatus
+from app.repositories import OrderRepository, ProductRepository
+from app.utils.datetime_utils import timestamp_to_hex
 
 
 class OrderService:

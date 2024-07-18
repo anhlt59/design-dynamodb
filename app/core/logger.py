@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from src.config import LOG_FORMAT, LOG_LEVEL
+from app.core.config import LOG_FORMAT, LOG_LEVEL
 
 logger = logging.getLogger()
 handler = logging.StreamHandler(sys.stdout)

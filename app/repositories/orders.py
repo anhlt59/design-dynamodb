@@ -1,4 +1,4 @@
-from src.models import OrderModel
+from app.models import OrderModel
 
 from .base import DynamoRepository
 

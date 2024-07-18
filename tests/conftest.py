@@ -3,8 +3,8 @@ import logging
 import pytest
 from faker import Faker
 
-from src.bootstrap import create_app
-from src.repositories import BrandRepository, CategoryRepository, OrderRepository, ProductRepository, UserRepository
+from app.core.bootstrap import create_app
+from app.repositories import BrandRepository, CategoryRepository, OrderRepository, ProductRepository, UserRepository
 
 logging.getLogger("faker").setLevel(logging.WARNING)
 fake = Faker()

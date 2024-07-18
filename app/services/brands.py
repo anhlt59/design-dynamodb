@@ -1,8 +1,8 @@
 from pynamodb.models import ResultIterator
 
-from src.exceptions import ConflictError
-from src.models import BrandModel, ProductModel
-from src.repositories import BrandRepository, ProductRepository
+from app.core.exceptions import ConflictError
+from app.models import BrandModel, ProductModel
+from app.repositories import BrandRepository, ProductRepository
 
 
 class BrandService:

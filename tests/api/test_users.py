@@ -1,11 +1,8 @@
-import pytest
-
-from src.config import APP_API_KEY
-from src.exceptions import AuthenticationError
-from src.models import UserModel
-from src.repositories import UserRepository
-from src.services import UserService
-from src.utils.datetime_utils import current_utc_timestamp
+from app.core.config import APP_API_KEY
+from app.models import UserModel
+from app.repositories import UserRepository
+from app.services import UserService
+from app.utils.datetime_utils import current_utc_timestamp
 
 HEADERS = {"x-api-key": APP_API_KEY}
 user_repository = UserRepository()

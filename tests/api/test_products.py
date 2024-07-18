@@ -1,7 +1,7 @@
-from src.config import APP_API_KEY
-from src.models import ProductModel
-from src.repositories import CategoryRepository, ProductRepository
-from src.services import CategoryService, ProductService
+from app.core.config import APP_API_KEY
+from app.models import ProductModel
+from app.repositories import CategoryRepository, ProductRepository
+from app.services import CategoryService, ProductService
 
 HEADERS = {"x-api-key": APP_API_KEY}
 product_repository = ProductRepository()

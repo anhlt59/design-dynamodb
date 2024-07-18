@@ -28,9 +28,8 @@ COPY --from=build-stage /usr/src/app/wheels /wheels/
 RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* && rm -rf /wheels
 # Copy source code to WORKDIR
 WORKDIR $APP_HOME
-COPY ./app.py "${APP_HOME}"
-COPY ./src "${APP_HOME}/src"
+COPY app "${APP_HOME}"
 
 # 'local' stage -------------------------------------------------------------------------------
 FROM run-stage as local-stage
-CMD ["python", "app.py"]
+CMD ["python", "app"]

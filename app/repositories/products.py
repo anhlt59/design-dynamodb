@@ -1,4 +1,4 @@
-from src.models import ProductModel
+from app.models import ProductModel
 
 from .base import DynamoRepository
 

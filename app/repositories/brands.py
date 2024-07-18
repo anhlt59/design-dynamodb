@@ -1,4 +1,4 @@
-from src.models import BrandModel
+from app.models import BrandModel
 
 from .base import DynamoRepository
 

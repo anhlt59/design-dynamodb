@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_injector import FlaskInjector, request
 
-from src import config
-from src.middlewares import configure_response_handlers
-from src.repositories import BrandRepository, CategoryRepository, OrderRepository, ProductRepository, UserRepository
-from src.services import BrandService, CategoryService, OrderService, ProductService, UserService
-from src.views.routes import build_routes
+from app.core import config
+from app.core.middlewares import configure_response_handlers
+from app.repositories import BrandRepository, CategoryRepository, OrderRepository, ProductRepository, UserRepository
+from app.services import BrandService, CategoryService, OrderService, ProductService, UserService
+from app.views.routes import build_routes
 
 
 def create_app() -> Flask:

@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify, request
 from injector import inject
 
-from src.exceptions import NotFoundError, ValidationError
-from src.middlewares import api_key_required
-from src.services import OrderService, UserService
-from src.utils.encode_utils import base64_decode_json, base64_encode_json
+from app.core.exceptions import NotFoundError, ValidationError
+from app.core.middlewares import api_key_required
+from app.services import OrderService, UserService
+from app.utils.encode_utils import base64_decode_json, base64_encode_json
 
 app = Blueprint("api/v1/users", __name__)
 

@@ -1,4 +1,4 @@
-from src.models import UserModel
+from app.models import UserModel
 
 from .base import DynamoRepository
 

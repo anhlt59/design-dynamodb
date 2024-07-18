@@ -1,10 +1,10 @@
 from pynamodb.models import ResultIterator
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from src.exceptions import AuthenticationError, ConflictError, NotFoundError
-from src.models import UserModel
-from src.repositories import UserRepository
-from src.utils.datetime_utils import timestamp_to_hex
+from app.core.exceptions import AuthenticationError, ConflictError, NotFoundError
+from app.models import UserModel
+from app.repositories import UserRepository
+from app.utils.datetime_utils import timestamp_to_hex
 
 
 class UserService:

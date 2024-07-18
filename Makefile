@@ -10,7 +10,7 @@ install:
 	@poetry lock && poetry install
 
 start:
-	@$(PYTHON) app.py
+	@$(PYTHON) app
 
 test:
 	@$(PYTHON) -m pytest tests

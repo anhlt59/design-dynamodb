@@ -1,6 +1,6 @@
-from src.config import APP_API_KEY
-from src.repositories import CategoryRepository
-from src.services import CategoryService
+from app.core.config import APP_API_KEY
+from app.repositories import CategoryRepository
+from app.services import CategoryService
 
 HEADERS = {"x-api-key": APP_API_KEY}
 brand_service = CategoryService(CategoryRepository())
