@@ -165,3 +165,57 @@
         * Order them by **Sort Key** using `scan_index_forward`:
             * `true` for ascending order
             * `false` for descending order
+
+### V. The Clean Architecture
+
+[//]: # (![Clean Architecture]&#40;docs/images/clean-architecture.jpg&#41;)
+
+* Follow the [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) to
+  structure the codebase.
+    * More information:
+        * [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+        * [Clean Architectures in Python](https://blog.thedigitalcatonline.com/blog/2016/11/14/clean-architectures-in-python-a-step-by-step-example/)
+
+* The main layers:
+    * Entities
+      * Represent your domain objects
+      * Plain objects:
+        * No dependencies
+        * No frameworks
+        * Can have validation methods
+    * Use Cases (Application Logic)
+    * Interface Adapters (Controllers, Presenters, Gateways)
+    * Frameworks and Drivers (Database, Web Framework)
+
+  ```mermaid
+  graph LR
+
+    subgraph Entities
+        direction LR
+        E1(Entity: User)
+        E2(Entity: Product)
+        E3(Entity: Brand)
+        E4(Entity: Category)
+        E5(Entity: Order)
+    end
+
+    subgraph Controller
+        direction LR
+        UC1(Use Case: Controller.method)
+    end
+
+    subgraph InterfaceAdapters
+        direction LR
+        IA2(Gateways: Repositories)
+        IA3(Presenters: DTOs)
+    end
+
+    subgraph Frameworks&Drivers
+        direction LR
+        F1(Framework: Flask)
+        F2(Database: DynamoDB)
+    end
+
+    %% relations
+    Frameworks&Drivers --> InterfaceAdapters --> Controller --> Entities
+    ```

@@ -1,13 +1,13 @@
+from app.adapters.repositories import CategoryRepository, ProductRepository
+from app.controllers import CategoryController, ProductController
 from app.core.config import APP_API_KEY
-from app.models import ProductModel
-from app.repositories import CategoryRepository, ProductRepository
-from app.services import CategoryService, ProductService
+from app.databases.models import ProductModel
 
 HEADERS = {"x-api-key": APP_API_KEY}
 product_repository = ProductRepository()
 category_repository = CategoryRepository()
-product_service = ProductService(product_repository)
-category_service = CategoryService(category_repository)
+product_service = ProductController(product_repository)
+category_service = CategoryController(category_repository)
 
 
 def test_get_product(test_client, dummy_product):

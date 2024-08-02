@@ -1,9 +1,9 @@
+from app.adapters.repositories import CategoryRepository
+from app.controllers import CategoryController
 from app.core.config import APP_API_KEY
-from app.repositories import CategoryRepository
-from app.services import CategoryService
 
 HEADERS = {"x-api-key": APP_API_KEY}
-brand_service = CategoryService(CategoryRepository())
+brand_service = CategoryController(CategoryRepository())
 
 
 def test_get_category(test_client, dummy_category):

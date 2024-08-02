@@ -1,9 +1,9 @@
+from app.adapters.repositories import BrandRepository, ProductRepository
+from app.controllers import BrandController
 from app.core.config import APP_API_KEY
-from app.repositories import BrandRepository, ProductRepository
-from app.services import BrandService
 
 HEADERS = {"x-api-key": APP_API_KEY}
-brand_service = BrandService(BrandRepository(), ProductRepository())
+brand_service = BrandController(BrandRepository(), ProductRepository())
 
 
 def test_get_brand(test_client, dummy_brand):
