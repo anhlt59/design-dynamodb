@@ -1,5 +1,5 @@
-from app.core.bootstrap import create_app
-from app.core.config import APP_HOST, APP_PORT
+from app.common.constants import APP_HOST, APP_PORT
+from app.framework.bootstrap import create_app
 
 app = create_app()
 

@@ -1,17 +1,23 @@
 from flask import Flask
 from flask_injector import FlaskInjector, request
 
-from app.core import config
-from app.core.middlewares import configure_response_handlers
-from app.repositories import BrandRepository, CategoryRepository, OrderRepository, ProductRepository, UserRepository
+from app.adapters.repositories import (
+    BrandRepository,
+    CategoryRepository,
+    OrderRepository,
+    ProductRepository,
+    UserRepository,
+)
+from app.common import constants
+from app.framework.controllers.routes import build_routes
+from app.framework.middlewares import configure_response_handlers
 from app.services import BrandService, CategoryService, OrderService, ProductService, UserService
-from app.views.routes import build_routes
 
 
 def create_app() -> Flask:
-    app = Flask(config.NAME)
-    app.config.from_object(config)
-    app.secret_key = config.APP_SECRET_KEY
+    app = Flask(constants.NAME)
+    app.config.from_object(constants)
+    app.secret_key = constants.APP_SECRET_KEY
 
     build_routes(app)
     configure_response_handlers(app)

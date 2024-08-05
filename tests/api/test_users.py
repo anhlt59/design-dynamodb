@@ -1,6 +1,6 @@
-from app.core.config import APP_API_KEY
-from app.models import UserModel
-from app.repositories import UserRepository
+from app.adapters.repositories import UserRepository
+from app.common.constants import APP_API_KEY
+from app.db.models import UserModel
 from app.services import UserService
 from app.utils.datetime_utils import current_utc_timestamp
 

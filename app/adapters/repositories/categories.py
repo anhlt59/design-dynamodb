@@ -1,4 +1,4 @@
-from app.models import CategoryModel
+from app.db.models import CategoryModel
 
 from .base import DynamoRepository
 

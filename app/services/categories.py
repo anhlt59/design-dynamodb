@@ -1,8 +1,8 @@
 from pynamodb.models import ResultIterator
 
-from app.core.exceptions import ConflictError
-from app.models import CategoryModel
-from app.repositories import CategoryRepository
+from app.adapters.repositories import CategoryRepository
+from app.common.exceptions import ConflictError
+from app.db.models import CategoryModel
 
 
 class CategoryService:

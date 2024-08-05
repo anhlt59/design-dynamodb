@@ -1,5 +1,5 @@
-from app.core.config import APP_API_KEY
-from app.repositories import CategoryRepository
+from app.adapters.repositories import CategoryRepository
+from app.common.constants import APP_API_KEY
 from app.services import CategoryService
 
 HEADERS = {"x-api-key": APP_API_KEY}

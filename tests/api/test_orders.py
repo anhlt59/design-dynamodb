@@ -1,5 +1,5 @@
-from app.core.config import APP_API_KEY
-from app.repositories import OrderRepository, ProductRepository
+from app.adapters.repositories import OrderRepository, ProductRepository
+from app.common.constants import APP_API_KEY
 from app.services import OrderService
 
 HEADERS = {"x-api-key": APP_API_KEY}

@@ -13,7 +13,7 @@ RUN apt-get update \
 
 # Install python packages
 COPY ./pyproject.toml ./poetry.lock /
-COPY ./app /app
+COPY app /app
 RUN pip install poetry==1.8.3
 RUN poetry build --format=wheel
 

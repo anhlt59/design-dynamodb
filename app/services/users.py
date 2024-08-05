@@ -1,9 +1,9 @@
 from pynamodb.models import ResultIterator
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app.core.exceptions import AuthenticationError, ConflictError, NotFoundError
-from app.models import UserModel
-from app.repositories import UserRepository
+from app.adapters.repositories import UserRepository
+from app.common.exceptions import AuthenticationError, ConflictError, NotFoundError
+from app.db.models import UserModel
 from app.utils.datetime_utils import timestamp_to_hex
 
 

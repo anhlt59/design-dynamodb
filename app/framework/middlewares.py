@@ -5,10 +5,9 @@ from flask import Flask, g, jsonify, request
 from flask.json.provider import DefaultJSONProvider
 from pynamodb.attributes import MapAttribute
 
-from app.core.config import APP_API_KEY
-from app.core.exceptions import ApiError, AuthenticationError
-from app.core.logger import logger
-from app.models import DynamoModel
+from app.common.constants import APP_API_KEY
+from app.common.exceptions import ApiError, AuthenticationError
+from app.common.logger import logger
 
 
 def api_key_required(func):
@@ -46,7 +45,7 @@ def configure_response_handlers(app):
         @staticmethod
         def default(obj):
             """Serialize objects that aren't natively serializable by json.dumps."""
-            if isinstance(obj, DynamoModel) or isinstance(obj, MapAttribute):
+            if isinstance(obj, MapAttribute):
                 return obj.to_dict()
             return DefaultJSONProvider.default(obj)
 

@@ -1,5 +1,5 @@
-from app.core.config import APP_API_KEY
-from app.repositories import BrandRepository, ProductRepository
+from app.adapters.repositories import BrandRepository, ProductRepository
+from app.common.constants import APP_API_KEY
 from app.services import BrandService
 
 HEADERS = {"x-api-key": APP_API_KEY}
