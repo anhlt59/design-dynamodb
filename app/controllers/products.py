@@ -1,12 +1,12 @@
 from pynamodb.exceptions import TransactWriteError
 
+from app.adapters.repositories import ProductRepository
 from app.core.exceptions import ConflictError, NotFoundError
 from app.models import BrandModel, CategoryModel, ProductModel
-from app.repositories import ProductRepository
 from app.utils.datetime_utils import ksuid_to_timestamp, timestamp_to_hex
 
 
-class ProductService:
+class ProductController:
     def __init__(self, product_repository: ProductRepository):
         self.product_repository = product_repository
 

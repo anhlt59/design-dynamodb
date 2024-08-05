@@ -1,11 +1,11 @@
 from pynamodb.models import ResultIterator
 
+from app.adapters.repositories import CategoryRepository
 from app.core.exceptions import ConflictError
 from app.models import CategoryModel
-from app.repositories import CategoryRepository
 
 
-class CategoryService:
+class CategoryController:
     def __init__(self, category_repository: CategoryRepository):
         self.category_repository = category_repository
 

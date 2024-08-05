@@ -165,3 +165,21 @@
         * Order them by **Sort Key** using `scan_index_forward`:
             * `true` for ascending order
             * `false` for descending order
+
+
+### V. Codebase structure
+
+* Follow the Clean Architecture to ensure that the core business logic is independent of frameworks and external technologies.
+    * More information:
+        * [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+        * [Clean Architectures in Python](https://blog.thedigitalcatonline.com/blog/2016/11/14/clean-architectures-in-python-a-step-by-step-example/)
+
+* The main layers:
+    * Entities: User, Product, Brand, Category, Order
+    * Use Cases: Controller methods
+    * Interface Adapters
+      * Presenters: DTOs (Data Transfer Objects)
+      * Gateways: Repositories
+    * Frameworks & Drivers:
+      * Web Framework: Flask
+      * Database: DynamoDB

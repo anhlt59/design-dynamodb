@@ -1,12 +1,12 @@
-from app.core.config import APP_API_KEY
+from app.adapters.repositories import UserRepository
+from app.controllers import UserController
+from app.core.constants import APP_API_KEY
 from app.models import UserModel
-from app.repositories import UserRepository
-from app.services import UserService
 from app.utils.datetime_utils import current_utc_timestamp
 
 HEADERS = {"x-api-key": APP_API_KEY}
 user_repository = UserRepository()
-user_service = UserService(user_repository)
+user_service = UserController(user_repository)
 
 
 def test_get_user(test_client, dummy_user):

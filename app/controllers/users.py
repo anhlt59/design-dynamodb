@@ -1,13 +1,13 @@
 from pynamodb.models import ResultIterator
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from app.adapters.repositories import UserRepository
 from app.core.exceptions import AuthenticationError, ConflictError, NotFoundError
 from app.models import UserModel
-from app.repositories import UserRepository
 from app.utils.datetime_utils import timestamp_to_hex
 
 
-class UserService:
+class UserController:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 

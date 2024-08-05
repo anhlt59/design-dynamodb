@@ -1,11 +1,11 @@
 from pynamodb.models import ResultIterator
 
+from app.adapters.repositories import BrandRepository, ProductRepository
 from app.core.exceptions import ConflictError
 from app.models import BrandModel, ProductModel
-from app.repositories import BrandRepository, ProductRepository
 
 
-class BrandService:
+class BrandController:
     def __init__(self, brand_repository: BrandRepository, product_repository: ProductRepository):
         self.brand_repository = brand_repository
         self.product_repository = product_repository
