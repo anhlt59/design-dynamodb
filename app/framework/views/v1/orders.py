@@ -8,10 +8,10 @@ from app.core.exceptions import NotFoundError
 from app.framework.middlewares import api_key_required
 from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("api/v1/users/<user_id>", __name__)
+app = Blueprint("orders", __name__)
 
 
-@app.route("/orders", methods=["GET"])
+@app.get("/orders")
 @api_key_required
 @inject
 def list_user_orders(user_id: str, order_controller: OrderController):
@@ -27,7 +27,7 @@ def list_user_orders(user_id: str, order_controller: OrderController):
     )
 
 
-@app.route("/orders/<order_id>", methods=["GET"])
+@app.get("/orders/<order_id>")
 @api_key_required
 @inject
 def get_order(user_id: str, order_id: str, order_controller: OrderController):
@@ -36,7 +36,7 @@ def get_order(user_id: str, order_id: str, order_controller: OrderController):
     raise NotFoundError(order_id)
 
 
-@app.route("/orders", methods=["POST"])
+@app.post("/orders")
 @api_key_required
 @inject
 def create_order(user_id: str, order_controller: OrderController):
@@ -45,7 +45,7 @@ def create_order(user_id: str, order_controller: OrderController):
     return OrderResponse.jsonify(order), 201
 
 
-@app.route("/orders/<order_id>", methods=["PUT"])
+@app.put("/orders/<order_id>")
 @api_key_required
 @inject
 def cancel_order(user_id: str, order_id: str, order_controller: OrderController):

@@ -11,7 +11,7 @@ from app.adapters.repositories import (
 from app.controllers import BrandController, CategoryController, OrderController, ProductController, UserController
 from app.core import constants
 from app.framework.middlewares import configure_response_handlers
-from app.framework.routes import build_routes
+from app.framework.views.routes import build_routes
 
 
 def create_app() -> Flask:

@@ -14,10 +14,10 @@ from app.core.exceptions import NotFoundError
 from app.framework.middlewares import api_key_required
 from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("api/v1/categories", __name__)
+app = Blueprint("categories", __name__)
 
 
-@app.route("", methods=["GET"])
+@app.get("")
 @api_key_required
 @inject
 def list_categories(category_controller: CategoryController):
@@ -33,7 +33,7 @@ def list_categories(category_controller: CategoryController):
     )
 
 
-@app.route("/<category_id>", methods=["GET"])
+@app.get("/<category_id>")
 @api_key_required
 @inject
 def get_category(category_id: str, category_controller: CategoryController):
@@ -42,7 +42,7 @@ def get_category(category_id: str, category_controller: CategoryController):
     raise NotFoundError(category_id)
 
 
-@app.route("", methods=["POST"])
+@app.post("")
 @api_key_required
 @inject
 def create_category(category_controller: CategoryController):
@@ -51,7 +51,7 @@ def create_category(category_controller: CategoryController):
     return CategoryResponse.jsonify(category), 201
 
 
-@app.route("/<category_id>", methods=["PUT"])
+@app.put("/<category_id>")
 @api_key_required
 @inject
 def update_category(category_id: str, category_controller: CategoryController):
@@ -60,7 +60,7 @@ def update_category(category_id: str, category_controller: CategoryController):
     return Response.jsonify(id=category_id)
 
 
-@app.route("/<category_id>", methods=["DELETE"])
+@app.delete("/<category_id>")
 @api_key_required
 @inject
 def delete_category(category_id: str, category_controller: CategoryController):

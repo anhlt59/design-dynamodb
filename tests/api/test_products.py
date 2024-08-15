@@ -1,7 +1,7 @@
 from app.adapters.repositories import CategoryRepository, ProductRepository
 from app.controllers import CategoryController, ProductController
 from app.core.constants import APP_API_KEY
-from app.models import ProductModel
+from app.db.models import ProductModel
 
 HEADERS = {"x-api-key": APP_API_KEY}
 product_repository = ProductRepository()

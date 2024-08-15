@@ -2,7 +2,7 @@ from pynamodb.models import ResultIterator
 
 from app.adapters.repositories import CategoryRepository
 from app.core.exceptions import ConflictError
-from app.models import CategoryModel
+from app.db.models import CategoryModel
 
 
 class CategoryController:

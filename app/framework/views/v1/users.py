@@ -14,10 +14,10 @@ from app.core.exceptions import NotFoundError
 from app.framework.middlewares import api_key_required
 from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("api/v1/users", __name__)
+app = Blueprint("users", __name__)
 
 
-@app.route("", methods=["GET"])
+@app.get("")
 @api_key_required
 @inject
 def list_users(user_controller: UserController):
@@ -33,7 +33,7 @@ def list_users(user_controller: UserController):
     )
 
 
-@app.route("/<user_id>", methods=["GET"])
+@app.get("/<user_id>")
 @api_key_required
 @inject
 def get_user(user_id: str, user_controller: UserController):
@@ -42,7 +42,7 @@ def get_user(user_id: str, user_controller: UserController):
     raise NotFoundError(user_id)
 
 
-@app.route("", methods=["POST"])
+@app.post("")
 @api_key_required
 @inject
 def register_user(user_controller: UserController):
@@ -51,7 +51,7 @@ def register_user(user_controller: UserController):
     return UserResponse.jsonify(user), 201
 
 
-@app.route("/<user_id>", methods=["PUT"])
+@app.put("/<user_id>")
 @api_key_required
 @inject
 def update_user(user_id: str, user_controller: UserController):
@@ -60,7 +60,7 @@ def update_user(user_id: str, user_controller: UserController):
     return Response.jsonify(id=user_id)
 
 
-@app.route("/<user_id>", methods=["DELETE"])
+@app.delete("/<user_id>")
 @api_key_required
 @inject
 def delete_user(user_id: str, user_controller: UserController):

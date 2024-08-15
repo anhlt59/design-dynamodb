@@ -14,10 +14,10 @@ from app.core.exceptions import NotFoundError
 from app.framework.middlewares import api_key_required
 from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("api/v1/brands", __name__)
+app = Blueprint("brands", __name__)
 
 
-@app.route("", methods=["GET"])
+@app.get("")
 @api_key_required
 @inject
 def list_brands(brand_controller: BrandController):
@@ -33,7 +33,7 @@ def list_brands(brand_controller: BrandController):
     )
 
 
-@app.route("/<brand_id>", methods=["GET"])
+@app.get("/<brand_id>")
 @api_key_required
 @inject
 def get_brand(brand_id: str, brand_controller: BrandController):
@@ -42,7 +42,7 @@ def get_brand(brand_id: str, brand_controller: BrandController):
     raise NotFoundError(brand_id)
 
 
-@app.route("", methods=["POST"])
+@app.post("")
 @api_key_required
 @inject
 def create_brand(brand_controller: BrandController):
@@ -51,7 +51,7 @@ def create_brand(brand_controller: BrandController):
     return BrandResponse.jsonify(brand), 201
 
 
-@app.route("/<brand_id>", methods=["PUT"])
+@app.put("/<brand_id>")
 @api_key_required
 @inject
 def update_brand(brand_id: str, brand_controller: BrandController):
@@ -60,7 +60,7 @@ def update_brand(brand_id: str, brand_controller: BrandController):
     return Response.jsonify(id=brand_id)
 
 
-@app.route("/<brand_id>", methods=["DELETE"])
+@app.delete("/<brand_id>")
 @api_key_required
 @inject
 def delete_brand(brand_id: str, brand_controller: BrandController):

@@ -1,7 +1,7 @@
 from app.adapters.repositories import UserRepository
 from app.controllers import UserController
 from app.core.constants import APP_API_KEY
-from app.models import UserModel
+from app.db.models import UserModel
 from app.utils.datetime_utils import current_utc_timestamp
 
 HEADERS = {"x-api-key": APP_API_KEY}

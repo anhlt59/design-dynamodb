@@ -16,8 +16,8 @@ from pynamodb.models import Action, Condition, Index, ResultIterator
 from pynamodb.transactions import TransactWrite
 
 from app.core.exceptions import ConflictError, InternalServerError, NotFoundError, UnprocessableEntityError
-from app.models import DynamoModel
-from app.models.base import DynamoMeta
+from app.db.models import DynamoModel
+from app.db.models.base import DynamoMeta
 
 
 class DynamoRepository[T: DynamoModel]:

@@ -3,9 +3,12 @@ import os
 DEBUG = os.getenv("DEBUG", True)
 FLASK_ENV = os.getenv("FLASK_ENV", "test")
 NAME = os.getenv("NAME", "app")
+
+# App
 APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
 APP_PORT = os.getenv("APP_PORT", "5000")
 APP_URL = os.getenv("APP_URL", "http://localhost")
+
 APP_API_KEY = os.getenv("APP_API_KEY", "012345678")
 APP_SECRET_KEY = os.getenv("APP_SECRET_KEY", "012345678")
 

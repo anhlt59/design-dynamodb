@@ -2,7 +2,7 @@ from pynamodb.models import ResultIterator
 
 from app.adapters.repositories import BrandRepository, ProductRepository
 from app.core.exceptions import ConflictError
-from app.models import BrandModel, ProductModel
+from app.db.models import BrandModel, ProductModel
 
 
 class BrandController:

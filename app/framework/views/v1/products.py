@@ -14,10 +14,10 @@ from app.core.exceptions import NotFoundError
 from app.framework.middlewares import api_key_required
 from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("api/v1/products", __name__)
+app = Blueprint("products", __name__)
 
 
-@app.route("", methods=["GET"])
+@app.get("")
 @api_key_required
 @inject
 def list_products(product_controller: ProductController):
@@ -50,7 +50,7 @@ def list_products(product_controller: ProductController):
     )
 
 
-@app.route("/<product_id>", methods=["GET"])
+@app.get("/<product_id>")
 @api_key_required
 @inject
 def get_product(product_id: str, product_controller: ProductController):
@@ -59,7 +59,7 @@ def get_product(product_id: str, product_controller: ProductController):
     raise NotFoundError(product_id)
 
 
-@app.route("", methods=["POST"])
+@app.post("")
 @api_key_required
 @inject
 def create_product(product_controller: ProductController):
@@ -68,7 +68,7 @@ def create_product(product_controller: ProductController):
     return ProductResponse.jsonify(product), 201
 
 
-@app.route("/<product_id>", methods=["PUT"])
+@app.put("/<product_id>")
 @api_key_required
 @inject
 def update_product(product_id: str, product_controller: ProductController):
@@ -77,7 +77,7 @@ def update_product(product_id: str, product_controller: ProductController):
     return Response.jsonify(id=product_id)
 
 
-@app.route("/<product_id>", methods=["DELETE"])
+@app.delete("/<product_id>")
 @api_key_required
 @inject
 def delete_product(product_id: str, product_controller: ProductController):
