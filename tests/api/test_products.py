@@ -1,9 +1,7 @@
 from app.adapters.repositories import CategoryRepository, ProductRepository
-from app.common.constants import APP_API_KEY
 from app.db.models import ProductModel
 from app.services import CategoryService, ProductService
 
-HEADERS = {"x-api-key": APP_API_KEY}
 product_repository = ProductRepository()
 category_repository = CategoryRepository()
 product_service = ProductService(product_repository)
@@ -11,9 +9,9 @@ category_service = CategoryService(category_repository)
 
 
 def test_get_product(test_client, dummy_product):
-    rv = test_client.get(f"/api/v1/products/{dummy_product.id}", headers=HEADERS)
+    rv = test_client.get(f"/api/v1/products/{dummy_product.id}")
     assert rv.status_code == 200
-    assert rv.json["id"] == dummy_product.id
+    assert rv.json()["id"] == dummy_product.id
 
 
 def test_list_product(test_client, dummy_brand, dummy_category):
@@ -24,23 +22,23 @@ def test_list_product(test_client, dummy_brand, dummy_category):
     ]
     product_repository.batch_put(models)
 
-    rv = test_client.get("/api/v1/products", headers=HEADERS)
-    assert rv.status_code == 200 and len(rv.json["items"]) == 3
+    rv = test_client.get("/api/v1/products")
+    assert rv.status_code == 200 and len(rv.json()["items"]) == 3
     # filter by name
-    rv = test_client.get("/api/v1/products?name=PRO1", headers=HEADERS)
-    assert rv.status_code == 200 and len(rv.json["items"]) == 1
+    rv = test_client.get("/api/v1/products?name=PRO1")
+    assert rv.status_code == 200 and len(rv.json()["items"]) == 1
     # filter by price
-    rv = test_client.get("/api/v1/products?priceGT=2", headers=HEADERS)
-    assert rv.status_code == 200 and len(rv.json["items"]) == 1
+    rv = test_client.get("/api/v1/products?priceGT=2")
+    assert rv.status_code == 200 and len(rv.json()["items"]) == 1
     # filter by brand_id
-    rv = test_client.get(f"/api/v1/products?brandId={dummy_brand.id}", headers=HEADERS)
-    assert rv.status_code == 200 and len(rv.json["items"]) == 2
+    rv = test_client.get(f"/api/v1/products?brandId={dummy_brand.id}")
+    assert rv.status_code == 200 and len(rv.json()["items"]) == 2
     # filter by category_id
-    rv = test_client.get(f"/api/v1/products?categoryId={dummy_category.id}", headers=HEADERS)
-    assert rv.status_code == 200 and len(rv.json["items"]) == 2
+    rv = test_client.get(f"/api/v1/products?categoryId={dummy_category.id}")
+    assert rv.status_code == 200 and len(rv.json()["items"]) == 2
     # filter by brand_id and category_id
-    rv = test_client.get(f"/api/v1/products?brandId=123&categoryId=123", headers=HEADERS)
-    assert rv.status_code == 200 and len(rv.json["items"]) == 1
+    rv = test_client.get(f"/api/v1/products?brandId=123&categoryId=123")
+    assert rv.status_code == 200 and len(rv.json()["items"]) == 1
 
     product_repository.batch_delete(models)
 
@@ -53,19 +51,19 @@ def test_create_product(test_client, dummy_brand, dummy_category):
         "categoryId": dummy_category.id,
         "stock": 100,
     }
-    rv = test_client.post("/api/v1/products", json=data, headers=HEADERS)
+    rv = test_client.post("/api/v1/products", json=data)
     assert rv.status_code == 201
-    product_service.delete(rv.json["id"])
+    product_service.delete(rv.json()["id"])
     # invalid brand_id
     data["brandId"] = "INVALID_ID"
-    rv = test_client.post("/api/v1/products", json=data, headers=HEADERS)
+    rv = test_client.post("/api/v1/products", json=data)
     assert rv.status_code == 404
 
 
 def test_update_product(test_client, dummy_product):
     new_category = category_service.create(name="Test Category")
     data = {"name": "Test Product", "categoryId": new_category.id}
-    rv = test_client.put(f"/api/v1/products/{dummy_product.id}", json=data, headers=HEADERS)
+    rv = test_client.put(f"/api/v1/products/{dummy_product.id}", json=data)
     assert rv.status_code == 200
 
     brand = product_service.get(dummy_product.id)

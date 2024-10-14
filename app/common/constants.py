@@ -1,16 +1,18 @@
 import os
 
-DEBUG = os.getenv("DEBUG", True)
-FLASK_ENV = os.getenv("FLASK_ENV", "test")
-NAME = os.getenv("NAME", "app")
-
 # App
-APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
-APP_PORT = os.getenv("APP_PORT", "5000")
-APP_URL = os.getenv("APP_URL", "http://localhost")
+NAME = os.getenv("NAME", "app")
+HOST = os.getenv("APP_HOST", "127.0.0.1")
+PORT = os.getenv("APP_PORT", "5000")
+API_DOCS = os.getenv("API_DOCS", "/api/openapi.json")
+API_KEY = os.getenv("API_KEY", "0123456789")
+SECRET_KEY = os.getenv("APP_SECRET_KEY", "012345678")
+DEBUG = os.getenv("DEBUG", True)
 
-APP_API_KEY = os.getenv("APP_API_KEY", "012345678")
-APP_SECRET_KEY = os.getenv("APP_SECRET_KEY", "012345678")
+# CORS settings
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
+CORS_METHODS = os.getenv("CORS_METHODS", "*").split(",")
+COR_HEADERS = os.getenv("CORS_HEADERS", "*").split(",")
 
 # AWS
 AWS_ENDPOINT = os.getenv("AWS_ENDPOINT", "http://localhost:4566")

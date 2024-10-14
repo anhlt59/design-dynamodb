@@ -1,7 +1,7 @@
 from pynamodb.models import ResultIterator
 
 from app.adapters.repositories import CategoryRepository
-from app.common.exceptions import ConflictError
+from app.common.exceptions import ConflictException
 from app.db.models import CategoryModel
 
 
@@ -16,7 +16,7 @@ class CategoryService:
         self,
         filters: dict | None = None,
         limit: int = 50,
-        derection: str = "asc",
+        direction: str = "asc",
         cursor: dict | None = None,
     ) -> ResultIterator[CategoryModel]:
         if filters and filters.get("name"):
@@ -28,7 +28,7 @@ class CategoryService:
             hash_key="CAT",
             range_key_condition=range_key_condition,
             last_evaluated_key=cursor,
-            scan_index_forward="asc" == derection,
+            scan_index_forward="asc" == direction,
             index=index,
             limit=limit,
         )
@@ -36,7 +36,7 @@ class CategoryService:
     def create(self, name: str) -> CategoryModel:
         # if category name exists in the group, raise Exception
         if self.category_repository.exist(name) is True:
-            raise ConflictError(f"Category {name} already exists")
+            raise ConflictException(f"Category {name} already exists")
         return self.category_repository.create({"name": name})
 
     def update(self, category_id: str, name: str) -> CategoryModel:

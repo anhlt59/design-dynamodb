@@ -1,7 +1,7 @@
 from pynamodb.models import ResultIterator
 
 from app.adapters.repositories import BrandRepository, ProductRepository
-from app.common.exceptions import ConflictError
+from app.common.exceptions import ConflictException
 from app.db.models import BrandModel, ProductModel
 
 
@@ -17,7 +17,7 @@ class BrandService:
         self,
         filters: dict | None = None,
         limit: int = 50,
-        derection: str = "asc",
+        direction: str = "asc",
         cursor: dict | None = None,
     ) -> ResultIterator[BrandModel]:
         index = range_key_condition = None
@@ -28,7 +28,7 @@ class BrandService:
             hash_key="BRAND",
             range_key_condition=range_key_condition,
             last_evaluated_key=cursor,
-            scan_index_forward="asc" == derection,
+            scan_index_forward="asc" == direction,
             index=index,
             limit=limit,
         )
@@ -36,7 +36,7 @@ class BrandService:
     def create(self, name: str) -> BrandModel:
         # if brand name exists in the group, raise Exception
         if self.brand_repository.exist(name) is True:
-            raise ConflictError(f"Brand {name} already exists")
+            raise ConflictException(f"Brand {name} already exists")
         return self.brand_repository.create({"name": name})
 
     def update(self, brand_id: str, name: str) -> BrandModel:

@@ -1,7 +1,8 @@
-from flask import Blueprint, request
-from injector import inject
+from typing import Annotated
 
-from app.adapters.presenters.base import Response
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends
+
 from app.adapters.presenters.brands import (
     BrandCreateRequest,
     BrandResponse,
@@ -9,60 +10,56 @@ from app.adapters.presenters.brands import (
     BrandsResponse,
     BrandUpdateRequest,
 )
-from app.common.exceptions import NotFoundError
-from app.framework.middlewares import api_key_required
+from app.common.exceptions import NotFoundException
+from app.framework.containers import Container
 from app.services import BrandService
-from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("brands", __name__)
+router = APIRouter(prefix="/brands")
 
 
-@app.get("")
-@api_key_required
+@router.get("", response_model=BrandsResponse)
 @inject
-def list_brands(brand_service: BrandService):
-    params = BrandsRequest(**request.args)
+def list_brands(
+    params: Annotated[BrandsRequest, Depends()],
+    brand_service: BrandService = Depends(Provide[Container.brand_service]),
+):
     result = brand_service.list(
-        filters=params.filters, limit=params.limit, derection=params.derection, cursor=params.parsed_cursor
+        filters={"name": params.name}, limit=params.limit, direction=params.direction, cursor=params.cursor
     )
-    return BrandsResponse.jsonify(
-        items=list(result),
-        limit=params.limit,
-        next=base64_encode_json(result.last_evaluated_key),
-        previous=params.cursor,
-    )
+    return {
+        "items": list(result),
+        "limit": params.limit,
+        "next": result.last_evaluated_key,
+        "previous": params.cursor,
+    }
 
 
-@app.get("/<brand_id>")
-@api_key_required
+@router.get("/{brand_id}", response_model=BrandResponse)
 @inject
-def get_brand(brand_id: str, brand_service: BrandService):
+def get_brand(brand_id: str, brand_service: BrandService = Depends(Provide[Container.brand_service])):
     if brand := brand_service.get(brand_id):
-        return BrandResponse.jsonify(brand)
-    raise NotFoundError(brand_id)
+        return brand
+    raise NotFoundException(brand_id)
 
 
-@app.post("")
-@api_key_required
+@router.post("", status_code=201, response_model=None)
 @inject
-def create_brand(brand_service: BrandService):
-    data = BrandCreateRequest(**request.json)
-    brand = brand_service.create(data.name)
-    return BrandResponse.jsonify(brand), 201
+def create_brand(payload: BrandCreateRequest, brand_service: BrandService = Depends(Provide[Container.brand_service])):
+    brand = brand_service.create(payload.name)
+    return {"id": brand.id}
 
 
-@app.put("/<brand_id>")
-@api_key_required
+@router.put("/{brand_id}", response_model=None)
 @inject
-def update_brand(brand_id: str, brand_service: BrandService):
-    data = BrandUpdateRequest(**request.json)
-    brand_service.update(brand_id, data.name)
-    return Response.jsonify(id=brand_id)
+def update_brand(
+    brand_id: str, payload: BrandUpdateRequest, brand_service: BrandService = Depends(Provide[Container.brand_service])
+):
+    brand_service.update(brand_id, payload.name)
+    return {"id": brand_id}
 
 
-@app.delete("/<brand_id>")
-@api_key_required
+@router.delete("/{brand_id}", response_model=None)
 @inject
-def delete_brand(brand_id: str, brand_service: BrandService):
+def delete_brand(brand_id: str, brand_service: BrandService = Depends(Provide[Container.brand_service])):
     brand_service.delete(brand_id)
-    return Response.jsonify(id=brand_id)
+    return {"id": brand_id}

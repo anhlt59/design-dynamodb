@@ -15,6 +15,7 @@ class OrderCreateRequest(Response):
 
 
 class OrderResponse(Response):
+    id: str
     userId: str
     items: list[OrderItem]
     totalPrice: float
@@ -28,10 +29,6 @@ class OrdersRequest(PageRequest):
     status: OrderStatus | None = None
     since: int | None = None
     until: int | None = None
-
-    @property
-    def filters(self):
-        return {"status": self.status, "since": self.since, "until": self.until}
 
 
 class OrdersResponse(PageResponse):

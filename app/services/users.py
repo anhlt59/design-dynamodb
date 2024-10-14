@@ -1,8 +1,9 @@
 from pynamodb.models import ResultIterator
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from app.adapters.presenters.users import UserUpdateRequest
 from app.adapters.repositories import UserRepository
-from app.common.exceptions import AuthenticationError, ConflictError, NotFoundError
+from app.common.exceptions import ConflictException, NotFoundException, UnauthorizedException
 from app.db.models import UserModel
 from app.utils.datetime_utils import timestamp_to_hex
 
@@ -22,12 +23,12 @@ class UserService:
         )
         if user := next(result, None):
             return user
-        raise NotFoundError(f"User with email {email} not found")
+        raise NotFoundException(f"User with email {email} not found")
 
     def register(self, name: str, email: str, password: str) -> UserModel:
         # if email is already taken, raise Exception
         if self.user_repository.exist(email):
-            raise ConflictError(f"Email {email} already exists")
+            raise ConflictException(f"Email {email} already exists")
         return self.user_repository.create(
             {
                 "name": name,
@@ -40,28 +41,29 @@ class UserService:
         user = self.get_by_email(email)
         if check_password_hash(user.password, password):
             return user
-        raise AuthenticationError("Invalid email or password, Please try again!")
+        raise UnauthorizedException("Invalid email or password, Please try again!")
 
-    def update(self, user_id: str, attributes: dict):
-        if password := attributes.get("password"):
+    def update(self, user_id: str, dto: UserUpdateRequest):
+        attributes = dto.model_dump()
+        if password := dto.password:
             attributes["password"] = generate_password_hash(password)
-        if email := attributes.get("email"):
+        if email := dto.email:
             attributes["sku"] = email
         try:
             self.user_repository.update(hash_key="USER", range_key=user_id, attributes=attributes)
-        except ConflictError:
-            raise NotFoundError(f"User <{user_id}> not found")
+        except ConflictException:
+            raise NotFoundException(f"User <{user_id}> not found")
 
     def delete(self, user_id: str):
         try:
             self.user_repository.delete(hash_key="USER", range_key=user_id, ignore_if_not_exist=False)
-        except ConflictError:
-            raise NotFoundError(f"User<{user_id}> not found")
+        except ConflictException:
+            raise NotFoundException(f"User<{user_id}> not found")
 
     def list(
         self,
         filters: dict | None = None,
-        derection: str = "asc",
+        direction: str = "asc",
         cursor: dict | None = None,
         limit: int = 50,
     ) -> ResultIterator[UserModel]:
@@ -82,7 +84,7 @@ class UserService:
             hash_key="USER",
             range_key_condition=range_key_condition,
             last_evaluated_key=cursor,
-            scan_index_forward="asc" == derection,
+            scan_index_forward="asc" == direction,
             filter_condition=filter_condition,
             limit=limit,
         )
@@ -91,7 +93,7 @@ class UserService:
         self,
         email: str,
         filters: dict | None = None,
-        derection: str = "asc",
+        direction: str = "asc",
         cursor: dict | None = None,
         limit: int = 50,
     ) -> ResultIterator[UserModel]:
@@ -113,7 +115,7 @@ class UserService:
             range_key_condition=range_key_condition,
             filter_condition=filter_condition,
             index=UserModel.lsi,
-            scan_index_forward="asc" == derection,
+            scan_index_forward="asc" == direction,
             last_evaluated_key=cursor,
             limit=limit,
         )

@@ -1,7 +1,8 @@
-from flask import Blueprint, request
-from injector import inject
+from typing import Annotated
 
-from app.adapters.presenters.base import Response
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends
+
 from app.adapters.presenters.users import (
     UserCreateRequest,
     UserResponse,
@@ -9,60 +10,53 @@ from app.adapters.presenters.users import (
     UsersResponse,
     UserUpdateRequest,
 )
-from app.common.exceptions import NotFoundError
-from app.framework.middlewares import api_key_required
+from app.common.exceptions import NotFoundException
+from app.framework.containers import Container
 from app.services import UserService
-from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("users", __name__)
+router = APIRouter(prefix="/users")
 
 
-@app.get("")
-@api_key_required
+@router.get("", response_model=UsersResponse)
 @inject
-def list_users(user_service: UserService):
-    params = UsersRequest(**request.args)
+def list_users(
+    params: Annotated[UsersRequest, Depends()], user_service: UserService = Depends(Provide[Container.user_service])
+):
     result = user_service.list(
-        filters=params.filters, limit=params.limit, derection=params.derection, cursor=params.parsed_cursor
-    )
-    return UsersResponse.jsonify(
-        items=list(result),
+        filters={"name": params.name, "since": params.since, "until": params.until},
         limit=params.limit,
-        next=base64_encode_json(result.last_evaluated_key),
-        previous=params.cursor,
+        direction=params.direction,
+        cursor=params.cursor,
     )
+    return {"items": list(result), "limit": params.limit, "next": result.last_evaluated_key, "previous": params.cursor}
 
 
-@app.get("/<user_id>")
-@api_key_required
+@router.get("/{user_id}", response_model=UserResponse)
 @inject
-def get_user(user_id: str, user_service: UserService):
+def get_user(user_id: str, user_service: UserService = Depends(Provide[Container.user_service])):
     if user := user_service.get_by_id(user_id):
-        return UserResponse.jsonify(user)
-    raise NotFoundError(user_id)
+        return user
+    raise NotFoundException(user_id)
 
 
-@app.post("")
-@api_key_required
+@router.post("", status_code=201, response_model=None)
 @inject
-def register_user(user_service: UserService):
-    data = UserCreateRequest(**request.json)
-    user = user_service.register(data.name, data.email, data.password)
-    return UserResponse.jsonify(user), 201
+def register_user(payload: UserCreateRequest, user_service: UserService = Depends(Provide[Container.user_service])):
+    user = user_service.register(payload.name, payload.email, payload.password)
+    return {"id": user.id}
 
 
-@app.put("/<user_id>")
-@api_key_required
+@router.put("/{user_id}", response_model=None)
 @inject
-def update_user(user_id: str, user_service: UserService):
-    data = UserUpdateRequest(**request.json)
-    user_service.update(user_id, data.model_dump())
-    return Response.jsonify(id=user_id)
+def update_user(
+    user_id: str, payload: UserUpdateRequest, user_service: UserService = Depends(Provide[Container.user_service])
+):
+    user_service.update(user_id, payload)
+    return {"id": user_id}
 
 
-@app.delete("/<user_id>")
-@api_key_required
+@router.delete("/{user_id}", response_model=None)
 @inject
-def delete_user(user_id: str, user_service: UserService):
+def delete_user(user_id: str, user_service: UserService = Depends(Provide[Container.user_service])):
     user_service.delete(user_id)
-    return Response.jsonify(id=user_id)
+    return {"id": user_id}

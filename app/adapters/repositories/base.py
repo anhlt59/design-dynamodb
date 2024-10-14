@@ -15,7 +15,12 @@ from pynamodb.exceptions import (
 from pynamodb.models import Action, Condition, Index, ResultIterator
 from pynamodb.transactions import TransactWrite
 
-from app.common.exceptions import ConflictError, InternalServerError, NotFoundError, UnprocessableEntityError
+from app.common.exceptions import (
+    ConflictException,
+    InternalServerError,
+    NotFoundException,
+    UnprocessableEntityException,
+)
 from app.db.models import DynamoModel
 from app.db.models.base import DynamoMeta
 
@@ -34,9 +39,9 @@ class DynamoRepository[T: DynamoModel]:
         try:
             return self.model_class.get(hash_key, range_key=range_key, attributes_to_get=attributes_to_get)
         except DoesNotExist as err:
-            raise NotFoundError(f"{self.__class__.__name__}: {err}")
+            raise NotFoundException(f"{self.__class__.__name__}: {err}")
         except GetError as err:
-            raise UnprocessableEntityError(f"{self.__class__.__name__}: {err}")
+            raise UnprocessableEntityException(f"{self.__class__.__name__}: {err}")
         except Exception as err:
             raise InternalServerError(f"{self.__class__.__name__}: {err}")
 
@@ -63,7 +68,7 @@ class DynamoRepository[T: DynamoModel]:
                 scan_index_forward=scan_index_forward,
             )
         except QueryError as err:
-            raise UnprocessableEntityError(f"{self.__class__.__name__}: {err}")
+            raise UnprocessableEntityException(f"{self.__class__.__name__}: {err}")
         except Exception as err:
             raise InternalServerError(f"{self.__class__.__name__}: {err}")
 
@@ -79,11 +84,11 @@ class DynamoRepository[T: DynamoModel]:
             if auto_commit is True:
                 model.save(condition=condition)
         except (AttributeNullError, AttributeDeserializationError) as err:
-            raise UnprocessableEntityError(f"{self.__class__.__name__} - AttributeError: {err}")
+            raise UnprocessableEntityException(f"{self.__class__.__name__} - AttributeError: {err}")
         except PutError as err:
             if err.cause_response_code == "ConditionalCheckFailedException":
-                raise ConflictError(f"{self.__class__.__name__}: {err}")
-            raise UnprocessableEntityError(f"{self.__class__.__name__} - PutError: {err}")
+                raise ConflictException(f"{self.__class__.__name__}: {err}")
+            raise UnprocessableEntityException(f"{self.__class__.__name__} - PutError: {err}")
         except Exception as err:
             raise InternalServerError(f"{self.__class__.__name__}: {err}")
         return model
@@ -116,11 +121,11 @@ class DynamoRepository[T: DynamoModel]:
             model = self.model_class(hash_key=hash_key, range_key=range_key)
             model.update(actions=actions, condition=condition)
         except DoesNotExist as err:
-            raise NotFoundError(f"{self.__class__.__name__}: {err}")
+            raise NotFoundException(f"{self.__class__.__name__}: {err}")
         except UpdateError as err:
             if err.cause_response_code == "ConditionalCheckFailedException":
-                raise ConflictError(f"{self.__class__.__name__}: {err}")
-            raise UnprocessableEntityError(f"{self.__class__.__name__}: {err}")
+                raise ConflictException(f"{self.__class__.__name__}: {err}")
+            raise UnprocessableEntityException(f"{self.__class__.__name__}: {err}")
         except Exception as err:
             raise InternalServerError(f"{self.__class__.__name__}: {err}")
 
@@ -128,7 +133,7 @@ class DynamoRepository[T: DynamoModel]:
         try:
             model.save()
         except PutError as err:
-            raise UnprocessableEntityError(f"{self.__class__.__name__}: {err}")
+            raise UnprocessableEntityException(f"{self.__class__.__name__}: {err}")
         except Exception as err:
             raise InternalServerError(f"{self.__class__.__name__}: {err}")
         return model
@@ -150,8 +155,8 @@ class DynamoRepository[T: DynamoModel]:
             self.model_class(hash_key=hash_key, range_key=range_key).delete(condition=condition)
         except DeleteError as err:
             if err.cause_response_code == "ConditionalCheckFailedException":
-                raise ConflictError(f"{self.__class__.__name__}: {err}")
-            raise UnprocessableEntityError(f"{self.__class__.__name__}: {err}")
+                raise ConflictException(f"{self.__class__.__name__}: {err}")
+            raise UnprocessableEntityException(f"{self.__class__.__name__}: {err}")
         except Exception as err:
             raise InternalServerError(f"{self.__class__.__name__}: {err}")
 
@@ -167,7 +172,7 @@ class DynamoRepository[T: DynamoModel]:
         try:
             return query_cls.count(hash_key, range_key_condition, filter_condition=filter_condition)
         except QueryError as err:
-            raise UnprocessableEntityError(f"{self.__class__.__name__}: {err}")
+            raise UnprocessableEntityException(f"{self.__class__.__name__}: {err}")
         except Exception as err:
             raise InternalServerError(f"{self.__class__.__name__}: {err}")
 

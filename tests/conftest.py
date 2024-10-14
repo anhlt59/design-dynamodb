@@ -2,6 +2,7 @@ import logging
 
 import pytest
 from faker import Faker
+from fastapi.testclient import TestClient
 
 from app.adapters.repositories import (
     BrandRepository,
@@ -10,10 +11,14 @@ from app.adapters.repositories import (
     ProductRepository,
     UserRepository,
 )
+from app.common.constants import API_KEY
 from app.framework.bootstrap import create_app
 
 logging.getLogger("faker").setLevel(logging.WARNING)
+
+app = create_app()
 fake = Faker()
+
 user_repository = UserRepository()
 category_repository = CategoryRepository()
 brand_repository = BrandRepository()
@@ -79,6 +84,6 @@ def dummy_order(dummy_user, dummy_product):
 
 @pytest.fixture
 def test_client():
-    app = create_app()
-    with app.app_context():
-        yield app.test_client()
+    with TestClient(app) as test_client:
+        test_client.headers.update({"x-api-key": API_KEY})
+        yield test_client

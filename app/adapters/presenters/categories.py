@@ -19,10 +19,6 @@ class CategoryResponse(Response):
 class CategoriesRequest(PageRequest):
     name: str | None = None
 
-    @property
-    def filters(self):
-        return {"name": self.name}
-
 
 class CategoriesResponse(PageResponse):
     items: list[CategoryResponse]

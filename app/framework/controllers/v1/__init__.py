@@ -1,7 +1,17 @@
-from .brands import app as brand_view
-from .categories import app as category_view
-from .orders import app as order_view
-from .products import app as product_view
-from .users import app as user_view
+from fastapi import APIRouter
 
-__all__ = ["brand_view", "category_view", "product_view", "order_view", "user_view"]
+from .brands import router as brand_router
+from .categories import router as category_router
+from .orders import router as order_router
+from .products import router as product_router
+from .users import router as user_router
+
+# API V1
+router = APIRouter(prefix="/v1")
+router.include_router(brand_router)
+router.include_router(category_router)
+router.include_router(product_router)
+router.include_router(order_router)
+router.include_router(user_router)
+
+__all__ = ["router"]

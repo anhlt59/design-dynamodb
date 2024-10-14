@@ -19,10 +19,6 @@ class BrandResponse(Response):
 class BrandsRequest(PageRequest):
     name: str | None = None
 
-    @property
-    def filters(self):
-        return {"name": self.name}
-
 
 class BrandsResponse(PageResponse):
     items: list[BrandResponse]

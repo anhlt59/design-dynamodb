@@ -1,7 +1,8 @@
 from pynamodb.exceptions import TransactWriteError
 
+from app.adapters.presenters.products import ProductCreateRequest, ProductUpdateRequest
 from app.adapters.repositories import ProductRepository
-from app.common.exceptions import ConflictError, NotFoundError
+from app.common.exceptions import ConflictException, NotFoundException
 from app.db.models import BrandModel, CategoryModel, ProductModel
 from app.utils.datetime_utils import ksuid_to_timestamp, timestamp_to_hex
 
@@ -13,48 +14,47 @@ class ProductService:
     def get(self, product_id: str) -> ProductModel:
         return self.product_repository.get(hash_key="PROD", range_key=product_id)
 
-    def create(self, attribute: dict) -> ProductModel:
-        category_id = attribute["categoryId"]
-        brand_id = attribute["brandId"]
+    def create(self, dto: ProductCreateRequest) -> ProductModel:
         try:
             with self.product_repository.transaction() as transaction:
                 # check if category and brand exist
                 transaction.condition_check(
                     CategoryModel,
                     hash_key="CAT",
-                    range_key=category_id,
+                    range_key=dto.categoryId,
                     condition=CategoryModel.pk.exists() & CategoryModel.sk.exists(),
                 )
                 transaction.condition_check(
                     BrandModel,
                     hash_key="BRAND",
-                    range_key=brand_id,
+                    range_key=dto.brandId,
                     condition=BrandModel.pk.exists() & BrandModel.sk.exists(),
                 )
                 # create product
                 product = ProductModel(
-                    name=attribute["name"],
-                    price=attribute["price"],
-                    stock=attribute["stock"],
-                    categoryId=category_id,
-                    brandId=brand_id,
+                    name=dto.name,
+                    price=dto.price,
+                    stock=dto.stock,
+                    categoryId=dto.categoryId,
+                    brandId=dto.brandId,
                 )
                 transaction.save(product)
             return product
         except TransactWriteError as err:
             error_msgs = []
             if err.cancellation_reasons[0] is not None:
-                error_msgs.append(f"Category<{category_id}> not found")
+                error_msgs.append(f"Category<{dto.categoryId}> not found")
             if err.cancellation_reasons[1] is not None:
-                error_msgs.append(f"Brand<{brand_id}> not found")
-            raise NotFoundError(", ".join(error_msgs))
+                error_msgs.append(f"Brand<{dto.brandId}> not found")
+            raise NotFoundException(", ".join(error_msgs))
 
-    def update(self, product_id: str, attributes: dict):
+    def update(self, product_id: str, dto: ProductUpdateRequest):
         created_at = ksuid_to_timestamp(product_id)
-        if brand_id := attributes.get("brandId"):
+        attributes = {k: v for k, v in dto.model_dump().items() if v is not None}
+        if brand_id := dto.brandId:
             attributes["gsi1pk"] = brand_id
             attributes["gsi2sk"] = f"{brand_id}#AT#{created_at}"
-        if category_id := attributes.get("categoryId"):
+        if category_id := dto.categoryId:
             attributes["gsi2pk"] = category_id
             attributes["gsi1sk"] = f"{category_id}#AT#{created_at}"
         self.product_repository.update(hash_key="PROD", range_key=product_id, attributes=attributes)
@@ -62,13 +62,13 @@ class ProductService:
     def delete(self, product_id: str):
         try:
             self.product_repository.delete(hash_key="PROD", range_key=product_id)
-        except ConflictError:
-            raise NotFoundError(f"Product<{product_id}> not found")
+        except ConflictException:
+            raise NotFoundException(f"Product<{product_id}> not found")
 
     def list(
         self,
         filters: dict | None = None,
-        derection: str = "asc",
+        direction: str = "asc",
         cursor: dict | None = None,
         limit: int = 50,
     ):
@@ -98,7 +98,7 @@ class ProductService:
             hash_key="PROD",
             range_key_condition=range_key_condition,
             filter_condition=filter_condition,
-            scan_index_forward="asc" == derection,
+            scan_index_forward="asc" == direction,
             last_evaluated_key=cursor,
             limit=limit,
         )
@@ -107,7 +107,7 @@ class ProductService:
         self,
         brand_id: str,
         filters: dict | None = None,
-        derection: str = "asc",
+        direction: str = "asc",
         cursor: dict | None = None,
         limit: int = 50,
     ):
@@ -141,7 +141,7 @@ class ProductService:
             range_key_condition=range_key_condition,
             filter_condition=filter_condition,
             index=ProductModel.gsi1,
-            scan_index_forward="asc" == derection,
+            scan_index_forward="asc" == direction,
             last_evaluated_key=cursor,
             limit=limit,
         )
@@ -150,7 +150,7 @@ class ProductService:
         self,
         category_id: str,
         filters: dict | None = None,
-        derection: str = "asc",
+        direction: str = "asc",
         cursor: dict | None = None,
         limit: int = 50,
     ):
@@ -184,7 +184,7 @@ class ProductService:
             range_key_condition=range_key_condition,
             filter_condition=filter_condition,
             index=ProductModel.gsi2,
-            scan_index_forward="asc" == derection,
+            scan_index_forward="asc" == direction,
             last_evaluated_key=cursor,
             limit=limit,
         )

@@ -1,7 +1,8 @@
-from flask import Blueprint, request
-from injector import inject
+from typing import Annotated
 
-from app.adapters.presenters.base import Response
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends
+
 from app.adapters.presenters.categories import (
     CategoriesRequest,
     CategoriesResponse,
@@ -9,60 +10,63 @@ from app.adapters.presenters.categories import (
     CategoryResponse,
     CategoryUpdateRequest,
 )
-from app.common.exceptions import NotFoundError
-from app.framework.middlewares import api_key_required
+from app.common.exceptions import NotFoundException
+from app.framework.containers import Container
 from app.services import CategoryService
-from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("categories", __name__)
+router = APIRouter(prefix="/categories")
 
 
-@app.get("")
-@api_key_required
+@router.get("", response_model=CategoriesResponse)
 @inject
-def list_categories(category_service: CategoryService):
-    params = CategoriesRequest(**request.args)
+def list_categories(
+    params: Annotated[CategoriesRequest, Depends()],
+    category_service: CategoryService = Depends(Provide[Container.category_service]),
+):
     result = category_service.list(
-        filters=params.filters, limit=params.limit, derection=params.derection, cursor=params.parsed_cursor
+        filters={"name": params.name}, limit=params.limit, direction=params.direction, cursor=params.cursor
     )
-    return CategoriesResponse.jsonify(
-        items=list(result),
-        limit=params.limit,
-        next=base64_encode_json(result.last_evaluated_key),
-        previous=params.cursor,
-    )
+    return {
+        "items": list(result),
+        "limit": params.limit,
+        "next": result.last_evaluated_key,
+        "previous": params.cursor,
+    }
 
 
-@app.get("/<category_id>")
-@api_key_required
+@router.get("/{category_id}", response_model=CategoryResponse)
 @inject
-def get_category(category_id: str, category_service: CategoryService):
+def get_category(category_id: str, category_service: CategoryService = Depends(Provide[Container.category_service])):
     if category := category_service.get(category_id):
-        return CategoryResponse.jsonify(category)
-    raise NotFoundError(category_id)
+        return category
+    raise NotFoundException(category_id)
 
 
-@app.post("")
-@api_key_required
+@router.post("", status_code=201, response_model=None)
 @inject
-def create_category(category_service: CategoryService):
-    data = CategoryCreateRequest(**request.json)
-    category = category_service.create(data.name)
-    return CategoryResponse.jsonify(category), 201
+def create_category(
+    payload: CategoryCreateRequest,
+    category_service: CategoryService = Depends(Provide[Container.category_service]),
+):
+    category = category_service.create(payload.name)
+    return {"id": category.id}
 
 
-@app.put("/<category_id>")
-@api_key_required
+@router.put("/{category_id}", response_model=None)
 @inject
-def update_category(category_id: str, category_service: CategoryService):
-    data = CategoryUpdateRequest(**request.json)
-    category_service.update(category_id, data.name)
-    return Response.jsonify(id=category_id)
+def update_category(
+    category_id: str,
+    payload: CategoryUpdateRequest,
+    category_service: CategoryService = Depends(Provide[Container.category_service]),
+):
+    category_service.update(category_id, payload.name)
+    return {"id": category_id}
 
 
-@app.delete("/<category_id>")
-@api_key_required
+@router.delete("/{category_id}", response_model=None)
 @inject
-def delete_category(category_id: str, category_service: CategoryService):
+def delete_category(
+    category_id: str, category_service: CategoryService = Depends(Provide[Container.category_service])
+):
     category_service.delete(category_id)
-    return Response.jsonify(id=category_id)
+    return {"id": category_id}

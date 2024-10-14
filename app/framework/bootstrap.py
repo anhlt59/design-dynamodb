@@ -1,46 +1,46 @@
-from flask import Flask
-from flask_injector import FlaskInjector, request
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from app.adapters.repositories import (
-    BrandRepository,
-    CategoryRepository,
-    OrderRepository,
-    ProductRepository,
-    UserRepository,
-)
-from app.common import constants
-from app.framework.controllers.routes import build_routes
-from app.framework.middlewares import configure_response_handlers
-from app.services import BrandService, CategoryService, OrderService, ProductService, UserService
+from app.common import constants, exceptions
+from app.framework.containers import Container
+from app.framework.controllers import router
 
 
-def create_app() -> Flask:
-    app = Flask(constants.NAME)
-    app.config.from_object(constants)
-    app.secret_key = constants.APP_SECRET_KEY
-
-    build_routes(app)
-    configure_response_handlers(app)
-    FlaskInjector(app=app, modules=[_bind])
+def create_app() -> FastAPI:
+    app = FastAPI(title=constants.NAME, openapi_url=constants.API_DOCS, debug=constants.DEBUG)
+    app.container = Container()
+    build_api(app)
+    add_middlewares(app)
     return app
 
 
-def _bind(binder):
-    # init repositories
-    user_repository = UserRepository()
-    category_repository = CategoryRepository()
-    brand_repository = BrandRepository()
-    product_repository = ProductRepository()
-    order_repository = OrderRepository()
-    # init services
-    user_service = UserService(user_repository)
-    brand_service = BrandService(brand_repository, product_repository)
-    category_service = CategoryService(category_repository)
-    product_service = ProductService(product_repository)
-    order_service = OrderService(order_repository, product_repository)
-    # bind services to request scope
-    binder.bind(UserService, to=user_service, scope=request)
-    binder.bind(BrandService, to=brand_service, scope=request)
-    binder.bind(CategoryService, to=category_service, scope=request)
-    binder.bind(ProductService, to=product_service, scope=request)
-    binder.bind(OrderService, to=order_service, scope=request)
+def build_api(app: FastAPI):
+    # build api routes
+    app.include_router(router)
+
+    # add exception handlers
+    async def exception_handler(_: Request, exc: exceptions.HTTPException) -> JSONResponse:
+        content = {"detail": exc.detail, "details": exc.details}
+        return JSONResponse(status_code=exc.status_code, content=content)
+
+    for exception in (
+        exceptions.BadRequestException,
+        exceptions.NotFoundException,
+        exceptions.ForbiddenException,
+        exceptions.UnauthorizedException,
+        exceptions.UnprocessableEntityException,
+        exceptions.InternalServerError,
+        exceptions.ConflictException,
+    ):
+        app.add_exception_handler(exception, handler=exception_handler)
+
+
+def add_middlewares(app: FastAPI):
+    app.add_middleware(
+        CORSMiddleware,
+        allow_credentials=True,
+        allow_origins=constants.CORS_ORIGINS,
+        allow_methods=constants.CORS_METHODS,
+        allow_headers=constants.COR_HEADERS,
+    )

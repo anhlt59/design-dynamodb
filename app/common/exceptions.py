@@ -1,41 +1,35 @@
-from werkzeug import exceptions
+class HTTPException(Exception):
+    status_code = 500
+
+    def __init__(self, detail: str | None = None, details: dict | None = None):
+        self.detail = detail
+        self.details = details
+        super().__init__(detail)
 
 
-class ApiError(Exception):
-    pass
+class BadRequestException(HTTPException):
+    status_code = 400
 
 
-class ValidationError(ApiError, exceptions.BadRequest):
-    code = 400
+class NotFoundException(HTTPException):
+    status_code = 404
 
 
-class BadRequestError(ApiError, exceptions.BadRequest):
-    code = 400
+class ForbiddenException(HTTPException):
+    status_code = 403
 
 
-class AuthenticationError(ApiError, exceptions.Unauthorized):
-    code = 401
+class UnauthorizedException(HTTPException):
+    status_code = 401
 
 
-class AccessDeniedError(ApiError, exceptions.Forbidden):
-    code = 403
+class UnprocessableEntityException(HTTPException):
+    status_code = 422
 
 
-class NotFoundError(ApiError, exceptions.NotFound):
-    code = 404
+class ConflictException(HTTPException):
+    status_code = 409
 
 
-class ConflictError(ApiError, exceptions.Conflict):
-    code = 409
-
-
-class UnprocessableEntityError(ApiError, exceptions.UnprocessableEntity):
-    code = 422
-
-
-class InternalServerError(ApiError, exceptions.InternalServerError):
-    code = 500
-
-
-class ServiceUnavailableError(ApiError, exceptions.ServiceUnavailable):
-    code = 503
+class InternalServerError(HTTPException):
+    status_code = 500

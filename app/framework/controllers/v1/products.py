@@ -1,7 +1,8 @@
-from flask import Blueprint, request
-from injector import inject
+from typing import Annotated
 
-from app.adapters.presenters.base import Response
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends
+
 from app.adapters.presenters.products import (
     ProductCreateRequest,
     ProductResponse,
@@ -9,77 +10,89 @@ from app.adapters.presenters.products import (
     ProductsResponse,
     ProductUpdateRequest,
 )
-from app.common.exceptions import NotFoundError
-from app.framework.middlewares import api_key_required
+from app.common.exceptions import NotFoundException
+from app.framework.containers import Container
 from app.services import ProductService
-from app.utils.encode_utils import base64_encode_json
 
-app = Blueprint("products", __name__)
+router = APIRouter(prefix="/products")
 
 
-@app.get("")
-@api_key_required
+@router.get("", response_model=ProductsResponse)
 @inject
-def list_products(product_service: ProductService):
-    params = ProductsRequest(**request.args)
+def list_products(
+    params: Annotated[ProductsRequest, Depends()],
+    product_service: ProductService = Depends(Provide[Container.product_service]),
+):
+    filters = {
+        "name": params.name,
+        "categoryId": params.categoryId,
+        "brandId": params.brandId,
+        "priceGT": params.priceGT,
+        "priceLT": params.priceLT,
+        "since": params.since,
+        "until": params.until,
+    }
     if params.brandId:
         result = product_service.list_by_brand(
             params.brandId,
-            filters=params.filters,
+            filters=filters,
             limit=params.limit,
-            derection=params.derection,
-            cursor=params.parsed_cursor,
+            direction=params.direction,
+            cursor=params.cursor,
         )
     elif params.categoryId:
         result = product_service.list_by_category(
             params.categoryId,
-            filters=params.filters,
+            filters=filters,
             limit=params.limit,
-            derection=params.derection,
-            cursor=params.parsed_cursor,
+            direction=params.direction,
+            cursor=params.cursor,
         )
     else:
         result = product_service.list(
-            filters=params.filters, limit=params.limit, derection=params.derection, cursor=params.parsed_cursor
+            filters=filters,
+            limit=params.limit,
+            direction=params.direction,
+            cursor=params.cursor,
         )
-    return ProductsResponse.jsonify(
-        items=list(result),
-        limit=params.limit,
-        next=base64_encode_json(result.last_evaluated_key),
-        previous=params.cursor,
-    )
+    return {
+        "items": list(result),
+        "limit": params.limit,
+        "next": result.last_evaluated_key,
+        "previous": params.cursor,
+    }
 
 
-@app.get("/<product_id>")
-@api_key_required
+@router.get("/{product_id}", response_model=ProductResponse)
 @inject
-def get_product(product_id: str, product_service: ProductService):
+def get_product(product_id: str, product_service: ProductService = Depends(Provide[Container.product_service])):
     if product := product_service.get(product_id):
-        return ProductResponse.jsonify(product)
-    raise NotFoundError(product_id)
+        return product
+    raise NotFoundException(product_id)
 
 
-@app.post("")
-@api_key_required
+@router.post("", status_code=201, response_model=None)
 @inject
-def create_product(product_service: ProductService):
-    data = ProductCreateRequest(**request.json).model_dump()
-    product = product_service.create(data)
-    return ProductResponse.jsonify(product), 201
+def create_product(
+    payload: ProductCreateRequest, product_service: ProductService = Depends(Provide[Container.product_service])
+):
+    product = product_service.create(payload)
+    return {"id": product.id}
 
 
-@app.put("/<product_id>")
-@api_key_required
+@router.put("/{product_id}", response_model=None)
 @inject
-def update_product(product_id: str, product_service: ProductService):
-    data = ProductUpdateRequest(**request.json).model_dump()
-    product_service.update(product_id, data)
-    return Response.jsonify(id=product_id)
+def update_product(
+    product_id: str,
+    payload: ProductUpdateRequest,
+    product_service: ProductService = Depends(Provide[Container.product_service]),
+):
+    product_service.update(product_id, payload)
+    return {"id": product_id}
 
 
-@app.delete("/<product_id>")
-@api_key_required
+@router.delete("/{product_id}", response_model=None)
 @inject
-def delete_product(product_id: str, product_service: ProductService):
+def delete_product(product_id: str, product_service: ProductService = Depends(Provide[Container.product_service])):
     product_service.delete(product_id)
-    return Response.jsonify(id=product_id)
+    return {"id": product_id}

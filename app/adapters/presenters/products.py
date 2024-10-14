@@ -37,18 +37,6 @@ class ProductsRequest(PageRequest):
     since: int | None = None
     until: int | None = None
 
-    @property
-    def filters(self):
-        return {
-            "name": self.name,
-            "categoryId": self.categoryId,
-            "brandId": self.brandId,
-            "priceGT": self.priceGT,
-            "priceLT": self.priceLT,
-            "since": self.since,
-            "until": self.until,
-        }
-
 
 class ProductsResponse(PageResponse):
     items: list[ProductResponse]
