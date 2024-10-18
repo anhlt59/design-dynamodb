@@ -4,7 +4,7 @@ from app.adapters.presenters.products import ProductCreateRequest, ProductUpdate
 from app.adapters.repositories import ProductRepository
 from app.common.exceptions import ConflictException, NotFoundException
 from app.db.models import BrandModel, CategoryModel, ProductModel
-from app.utils.datetime_utils import ksuid_to_timestamp, timestamp_to_hex
+from app.utils.datetime_utils import timestamp_to_hex, uuid7_to_timestamp
 
 
 class ProductService:
@@ -49,7 +49,7 @@ class ProductService:
             raise NotFoundException(", ".join(error_msgs))
 
     def update(self, product_id: str, dto: ProductUpdateRequest):
-        created_at = ksuid_to_timestamp(product_id)
+        created_at = uuid7_to_timestamp(product_id)
         attributes = {k: v for k, v in dto.model_dump().items() if v is not None}
         if brand_id := dto.brandId:
             attributes["gsi1pk"] = brand_id

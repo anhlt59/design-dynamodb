@@ -1,5 +1,7 @@
 from datetime import UTC, datetime
 
+from uuid_utils import UUID, uuid7
+
 EPOCH_TIME = 1400000000
 
 
@@ -7,13 +9,11 @@ def current_utc_timestamp() -> int:
     return round(datetime.now(UTC).timestamp())
 
 
-def timestamp_to_hex(timestamp: float) -> str:
-    """Convert timestamp to Hexadecimal string"""
-    hex_string = hex(int(timestamp - EPOCH_TIME))
-    # remove the "0x" prefix
-    return hex_string[2:]
+def timestamp_to_hex(timestamp: float | int) -> str:
+    """Convert timestamp (in seconds) to Hexadecimal string"""
+    return uuid7(int(timestamp)).hex[:8]
 
 
-def ksuid_to_timestamp(ksuid_str: str) -> int:
-    """Convert KSUID string to timestamp"""
-    return int(ksuid_str[:8], 16) + EPOCH_TIME
+def uuid7_to_timestamp(uuid: str) -> int:
+    """Convert uuid7 string to timestamp"""
+    return UUID(uuid).timestamp

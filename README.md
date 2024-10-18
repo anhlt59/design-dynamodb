@@ -119,7 +119,7 @@
 | &check; | User     | Get a user by id                      | Table       | PK="USER" AND SK="USER#001"                                 |                                |
 | &check; | User     | Get a user by email                   | LSI         | PK="USER" AND SKU="EMAIL#test01@gmail.com"                  |                                |
 | &check; | User     | List users                            | Table       | PK="USER"                                                   | order by created_at            |
-| &check; | User     | List users filter by created_at       | Table       | PK="USER" AND SK > "USER#<ksuid_prefix_time>"               | order by created_at            |
+| &check; | User     | List users filter by created_at       | Table       | PK="USER" AND SK > "USER#<uuid7_prefix_time>"               | order by created_at            |
 | &check; | User     | List users filter by email-prefix     | GSI1        | GSI1PK="USER" AND GSI1SK.startswith("EMAIL#test")           | order by email                 |
 | &check; | Category | Get a category by id                  | Table       | PK="CAT" AND SK="CAT#123"                                   |                                |
 | &check; | Category | List categories                       | Table       | PK="CAT"                                                    | order by created_at            |
@@ -157,7 +157,7 @@
 | Product | CAT#<cat_id> | BRAND#<brand_id>#AT#<created_at> |
 
 * **Notes**:
-    * Use [ksuid](https://github.com/saresend/KSUID) instead of uuid. It's very useful for sorting items by `created_at`
+    * [uuid7](https://uuid7.com) is a universally unique identifier that is generated using a timestamp. It's very useful for sorting items by `created_at`
     * SK should be entity id
     * PK should be group of entity id(s)
     * When listing entities

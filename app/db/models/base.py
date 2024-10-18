@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import Any
 
-from ksuid import ksuid
 from pynamodb.attributes import DiscriminatorAttribute, NumberAttribute, UnicodeAttribute
 from pynamodb.indexes import Projection
 from pynamodb.models import Model
+from uuid_utils import uuid7
 
 from app.common.constants import AWS_ENDPOINT, AWS_REGION, DYNAMODB_TABLE_NAME
 from app.utils.datetime_utils import current_utc_timestamp
@@ -52,7 +52,7 @@ class DynamoModel(Model):
     pk = UnicodeAttribute(hash_key=True)
     sk = UnicodeAttribute(range_key=True)
     # Attributes
-    id = UnicodeAttribute(null=False, default_for_new=lambda: str(ksuid()))
+    id = UnicodeAttribute(null=False, default_for_new=lambda: str(uuid7()))
     createdAt = NumberAttribute(default_for_new=current_utc_timestamp)
     updatedAt = NumberAttribute(default=current_utc_timestamp)
     type = DiscriminatorAttribute()
