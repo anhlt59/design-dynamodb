@@ -5,7 +5,7 @@ FROM python:${PYTHON_VERSION} as python
 # 'build' stage -------------------------------------------------------------------------------
 FROM python as build-stage
 
-RUN apt-get update \
+RUN apt-get _update \
   && apt-get install -y build-essential \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
@@ -30,4 +30,4 @@ RUN pip install --no-cache-dir --find-links=/wheels/ /wheels/* && rm -rf /wheels
 
 # 'local' stage -------------------------------------------------------------------------------
 FROM run-stage as local-stage
-CMD ["python", "-m", "app"]
+CMD ["python", "app/adapters/api"]
